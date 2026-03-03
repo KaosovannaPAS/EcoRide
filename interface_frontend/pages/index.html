@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoRide - Covoiturage Écologique</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../ressources/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div id="header-container"></div>
+
+    <main>
+        <section class="hero-section">
+            <div class="container">
+                <h1 class="display-4 fw-bold">Voyagez vert avec EcoRide</h1>
+                <p class="lead">Réduisez votre empreinte carbone en partageant vos trajets.</p>
+
+                <div class="card mt-4 p-4 mx-auto" style="max-width: 800px; color: var(--text-color);">
+                    <form id="search-form" class="row g-3" action="recherche.html" method="GET">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="departure_city" placeholder="Ville de départ"
+                                required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="destination_city"
+                                placeholder="Ville d'arrivée" required>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" class="form-control" name="departure_date">
+                        </div>
+                        <div class="col-md-1">
+                            <button type="submit" class="btn btn-eco w-100">🔍</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section class="container my-5">
+            <h2 class="text-center mb-4">Pourquoi choisir EcoRide ?</h2>
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    <div class="p-3">
+                        <h3>Écologique</h3>
+                        <p>Privilégiez les véhicules électriques (marqués <span class="eco-badge">Feuille</span>) et
+                            réduisez les émissions.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="p-3">
+                        <h3>Économique</h3>
+                        <p>Partagez les frais et accumulez des crédits plateforme (20 offerts à l'inscription).</p>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="p-3">
+                        <h3>Convivial</h3>
+                        <p>Rencontrez des personnes partageant vos valeurs.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="footer-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../ressources/js/api.js"></script>
+    <script>
+        fetch('../composants/header.html')
+            .then(response => response.text())
+            .then(data => document.getElementById('header-container').innerHTML = data);
+
+        fetch('../composants/footer.html')
+            .then(response => response.text())
+            .then(data => document.getElementById('footer-container').innerHTML = data);
+    </script>
+</body>
+
+</html>

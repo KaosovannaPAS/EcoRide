@@ -1,0 +1,45 @@
+<!-- interface_frontend/composants/header.html -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark-green sticky-top shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="index.html">🌱 EcoRide</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item"><a class="nav-link" href="index.html">Accueil</a></li>
+                <li class="nav-item"><a class="nav-link" href="recherche.html">Covoiturages</a></li>
+                <li class="nav-item" id="nav-espace-perso" style="display:none;"><a class="nav-link"
+                        href="espace-perso.html">Mon Espace</a></li>
+                <li class="nav-item ms-lg-3"><a class="btn btn-outline-light rounded-pill px-4" href="connexion.html"
+                        id="nav-login">Connexion</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<script>
+    // Logic to show/hide login/logout based on localStorage
+    setTimeout(() => {
+        const user = JSON.parse(localStorage.getItem('ecoride_user') || 'null');
+        const loginBtn = document.getElementById('nav-login');
+        const espacePerso = document.getElementById('nav-espace-perso');
+
+        if (user) {
+            loginBtn.textContent = "Déconnexion";
+            loginBtn.href = "#";
+            loginBtn.classList.remove('btn-outline-light');
+            loginBtn.classList.add('btn-danger');
+
+            loginBtn.onclick = (e) => {
+                e.preventDefault();
+                localStorage.removeItem('ecoride_user');
+                window.location.reload();
+            };
+
+            if (espacePerso) {
+                espacePerso.style.display = "block";
+            }
+        }
+    }, 100); // Small delay to allow DOM to attach if loaded dynamically
+</script>

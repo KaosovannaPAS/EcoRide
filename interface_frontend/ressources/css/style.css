@@ -1,0 +1,67 @@
+/* interface_frontend/ressources/css/style.css */
+:root {
+    --eco-green: #2ecc71;
+    --eco-dark-green: #27ae60;
+    --eco-brown: #795548;
+    --eco-light: #f1f8e9;
+    --eco-dark: #2c3e50;
+    --text-color: #333;
+}
+
+body {
+    background-color: var(--eco-light);
+    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.navbar {
+    background-color: var(--eco-dark-green) !important;
+}
+
+.navbar-brand, .nav-link {
+    color: #fff !important;
+}
+
+.btn-eco {
+    background-color: var(--eco-green);
+    color: white;
+    border: none;
+}
+
+.btn-eco:hover {
+    background-color: var(--eco-dark-green);
+    color: white;
+}
+
+.hero-section {
+    background: linear-gradient(rgba(39, 174, 96, 0.8), rgba(44, 62, 80, 0.8));
+    color: white;
+    padding: 100px 0;
+    text-align: center;
+}
+
+.eco-badge {
+    background-color: var(--eco-green);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.card {
+    border: 1px solid var(--eco-green);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+footer {
+    background-color: var(--eco-dark);
+    color: white;
+}

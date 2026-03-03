@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - EcoRide</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../ressources/css/style.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+    <div id="header-container"></div>
+
+    <main class="container my-5 flex-grow-1">
+        <h2 class="mb-4 text-danger fw-bold border-bottom pb-2">Espace Administration</h2>
+
+        <div class="row mb-5">
+            <div class="col-md-6 mb-3">
+                <div
+                    class="card p-4 text-center bg-white shadow-sm h-100 border-0 border-start border-5 border-success">
+                    <h5 class="text-muted fw-bold">Crédits générés par la plateforme</h5>
+                    <h1 class="display-3 text-success fw-bold mt-2" id="stat-credits">0</h1>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div
+                    class="card p-4 text-center bg-white shadow-sm h-100 border-0 border-start border-5 border-primary">
+                    <h5 class="text-muted fw-bold">Trajets créés</h5>
+                    <h1 class="display-3 text-primary fw-bold mt-2" id="stat-trips-today">0</h1>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="mb-3">Modération des avis</h3>
+        <div class="card p-4 shadow-sm">
+            <div id="reviews-container">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-secondary"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../ressources/js/api.js"></script>
+    <script>
+        fetch('../composants/header.html').then(r => r.text()).then(d => {
+            document.getElementById('header-container').innerHTML = d;
+            const scripts = document.getElementById('header-container').querySelectorAll('script');
+            scripts.forEach(script => {
+                const newScript = document.createElement('script');
+                newScript.text = script.innerHTML;
+                document.body.appendChild(newScript);
+            });
+        });
+        fetch('../composants/footer.html').then(r => r.text()).then(d => document.getElementById('footer-container').innerHTML = d);
+
+        const user = JSON.parse(localStorage.getItem('ecoride_user'));
+        if (!user || (user.role !== 'admin' && user.role !== 'employe')) {
+            alert("Accès refusé. Vous n'êtes pas administrateur ou employé.");
+            window.location.href = 'index.html';
+        }
+
+        async function loadDashboard() {
+            try {
+                const stats = await apiCall('admin.php?action=dashboard_stats');
+                document.getElementById('stat-credits').textContent = stats.total_credits_earned;
+
+                if (stats.trips_per_day && stats.trips_per_day.length > 0) {
+                    let sum = 0;
+                    stats.trips_per_day.forEach(t => sum += parseInt(t.count));
+                    document.getElementById('stat-trips-today').textContent = sum;
+                }
+
+                loadPendingReviews();
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function loadPendingReviews() {
+            try {
+                const reviews = await apiCall('admin.php?action=pending_reviews');
+                renderReviews(reviews);
+            } catch (error) {
+                document.getElementById('reviews-container').innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+            }
+        }
+
+        function renderReviews(reviews) {
+            const container = document.getElementById('reviews-container');
+            if (reviews.length === 0) {
+                container.innerHTML = '<div class="alert alert-info mb-0">Aucun avis en attente de modération.</div>';
+                return;
+            }
+
+            let html = '<div class="list-group">';
+            reviews.forEach(r => {
+                let id = r._id.$oid || r._id;
+                html += `
+                    <div class="list-group-item list-group-item-action p-4 border rounded mb-2">
+                        <div class="d-flex w-100 justify-content-between mb-2">
+                            <h5 class="mb-1 text-dark fw-bold">Avis pour l'utilisateur #${r.reviewee_id}</h5>
+                            <span class="badge bg-warning text-dark fs-5 shadow-sm">${r.rating} / 5</span>
+                        </div>
+                        <p class="mb-3 fs-5 fst-italic text-secondary">"${r.comment}"</p>
+                        <div class="text-end border-top pt-3">
+                            <span class="text-muted small float-start mt-2">Par l'utilisateur #${r.reviewer_id}</span>
+                            <button class="btn btn-outline-danger px-4 fw-bold me-2" onclick="moderate('${id}', 'rejected')">Rejeter</button>
+                            <button class="btn btn-success px-4 fw-bold" onclick="moderate('${id}', 'approved')">Approuver</button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        async function moderate(reviewId, status) {
+            if (!confirm(`Voulez-vous vraiment ${status === 'approved' ? 'approuver' : 'rejeter'} cet avis ?`)) return;
+            try {
+                await apiCall('admin.php?action=moderate_review', 'PUT', {
+                    review_id: reviewId,
+                    status: status
+                });
+                loadPendingReviews();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails du Trajet - EcoRide</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../ressources/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div id="header-container"></div>
+
+    <main class="container my-5 flex-grow-1" id="detail-container">
+        <div class="text-center py-5">
+            <div class="spinner-border text-success"></div>
+        </div>
+    </main>
+
+    <div id="footer-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../ressources/js/api.js"></script>
+    <script>
+        fetch('../composants/header.html').then(r => r.text()).then(d => {
+            document.getElementById('header-container').innerHTML = d;
+            const scripts = document.getElementById('header-container').querySelectorAll('script');
+            scripts.forEach(script => {
+                const newScript = document.createElement('script');
+                newScript.text = script.innerHTML;
+                document.body.appendChild(newScript);
+            });
+        });
+        fetch('../composants/footer.html').then(r => r.text()).then(d => document.getElementById('footer-container').innerHTML = d);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let tripId = urlParams.get('id');
+
+        async function loadTripDetail() {
+            try {
+                let trips = await apiCall(`trips.php?action=search`);
+                let t = trips.find(tr => tr.id == tripId);
+
+                if (!t) throw new Error("Trajet non trouvé");
+
+                let ecoBadge = t.is_electric == 1 ? '<span class="eco-badge">🍃 Écologique</span>' : '';
+
+                let html = `
+                    <div class="card p-5 mx-auto shadow-sm" style="max-width: 800px; border-top: 5px solid var(--eco-green);">
+                        <h2 class="mb-4">${t.departure_city} ➔ ${t.destination_city} ${ecoBadge}</h2>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <div class="p-3 bg-light rounded">
+                                    <h5 class="fw-bold">Le Trajet</h5>
+                                    <p class="mb-1"><strong>Date :</strong> ${t.departure_date}</p>
+                                    <p class="mb-1"><strong>Heure de départ :</strong> ${t.departure_time}</p>
+                                    <p class="mb-1"><strong>Durée estimée :</strong> ${t.max_duration} min</p>
+                                    <p class="mb-1"><strong>Places restantes :</strong> ${t.max_seats}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded h-100">
+                                    <h5 class="fw-bold">Le Chauffeur</h5>
+                                    <p class="mb-1"><strong>Pseudo :</strong> ${t.driver_pseudo}</p>
+                                    <p class="mb-1"><strong>Véhicule :</strong> ${t.vehicle_model}</p>
+                                    <div class="mt-3">
+                                        <p class="text-muted small fst-italic">Les avis du chauffeur (à venir...)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr />
+                        
+                        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-4">
+                            <h2 class="mb-3 mb-sm-0 text-success fw-bold">${t.price} <small class="text-muted fs-5 fw-normal">Crédits</small></h2>
+                            <button class="btn btn-eco btn-lg px-5 py-3 shadow-sm fw-bold" onclick="reserver(${t.id}, ${t.price})">Participer</button>
+                        </div>
+                        <div class="text-muted text-center small mt-3">Double confirmation requise lors de la participation.</div>
+                    </div>
+                `;
+                document.getElementById('detail-container').innerHTML = html;
+            } catch (error) {
+                document.getElementById('detail-container').innerHTML = '<div class="alert alert-danger text-center">Erreur: ' + error.message + '</div>';
+            }
+        }
+
+        async function reserver(tId, price) {
+            const user = JSON.parse(localStorage.getItem('ecoride_user'));
+            if (!user) {
+                alert("Vous devez être connecté pour réserver.");
+                window.location.href = "connexion.html";
+                return;
+            }
+            if (confirm(`Confirmez-vous la réservation avec un débit de ${price} crédits ?\n\nAppuyez sur OK pour valider (Double confirmation).`)) {
+                try {
+                    const res = await apiCall('reservations.php?action=create', 'POST', {
+                        trip_id: tId,
+                        passenger_id: user.id,
+                        price: price
+                    });
+                    alert(res.message);
+                    window.location.href = `espace-perso.html`;
+                } catch (e) {
+                    alert(e.message);
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadTripDetail);
+    </script>
+</body>
+
+</html>
