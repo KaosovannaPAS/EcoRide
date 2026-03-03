@@ -2,7 +2,7 @@
 // noyau_backend/api/v1/reservations.php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST, PUT, OPTIONS");
+header("Access-Control-Allow-Methods: POST, GET, PUT, OPTIONS");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
@@ -12,47 +12,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once '../../configuration/db.php';
-require_once '../../models/Reservation.php';
+require_once '../../controllers/ReservationController.php';
 
+$controller = new ReservationController($pdo);
 $action = $_GET['action'] ?? '';
-$reservation = new Reservation($pdo);
+$method = $_SERVER['REQUEST_METHOD'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents("php://input"));
+switch ($method) {
+    case 'POST':
+        $data = json_decode(file_get_contents("php://input"));
+        if ($action === 'create') {
+            $res = $controller->create($data);
+        }
+        else {
+            $res = ["status" => 400, "message" => "Action inconnue."];
+        }
+        break;
 
-    if ($action === 'create') {
-        if (!empty($data->trip_id) && !empty($data->passenger_id) && isset($data->price)) {
-            $reservation->trip_id = $data->trip_id;
-            $reservation->passenger_id = $data->passenger_id;
+    case 'GET':
+        if ($action === 'list_by_passenger') {
+            $res = $controller->listByPassenger($_GET['passenger_id'] ?? 0);
+            http_response_code($res['status']);
+            echo json_encode($res['reservations'] ?? []);
+            exit;
+        }
+        else {
+            $res = ["status" => 400, "message" => "Action inconnue."];
+        }
+        break;
 
-            if ($reservation->create($data->price)) {
-                http_response_code(201);
-                echo json_encode(["message" => "Réservation effectuée. Crédits débités."]);
+    case 'PUT':
+        $data = json_decode(file_get_contents("php://input"));
+        if ($action === 'update_status') {
+            // Logic would go to reservation model updateStatus
+            $reservation = new Reservation($pdo);
+            if ($reservation->updateStatus($data->reservation_id, $data->status)) {
+                $res = ["status" => 200, "message" => "Statut mis à jour."];
             }
             else {
-                http_response_code(503);
-                echo json_encode(["message" => "Impossible de réserver. Crédits insuffisants ou erreur."]);
+                $res = ["status" => 500, "message" => "Erreur mise à jour."];
             }
         }
         else {
-            http_response_code(400);
-            echo json_encode(["message" => "Données incomplètes."]);
+            $res = ["status" => 400, "message" => "Action inconnue."];
         }
-    }
+        break;
+
+    default:
+        $res = ["status" => 405, "message" => "Méthode non autorisée."];
+        break;
 }
-else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-    $data = json_decode(file_get_contents("php://input"));
-    if ($action === 'update_status') {
-        if (!empty($data->reservation_id) && !empty($data->status)) {
-            // Double confirmation usually means changing status to validated or refused
-            if ($reservation->updateStatus($data->reservation_id, $data->status)) {
-                http_response_code(200);
-                echo json_encode(["message" => "Statut de réservation mis à jour."]);
-            }
-            else {
-                http_response_code(503);
-                echo json_encode(["message" => "Impossible de mettre à jour le statut."]);
-            }
-        }
-    }
-}
+
+http_response_code($res['status']);
+echo json_encode($res);

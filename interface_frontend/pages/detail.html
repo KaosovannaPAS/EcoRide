@@ -19,6 +19,30 @@
         </div>
     </main>
 
+    <!-- Double Confirmation Modal -->
+    <div class="modal fade" id="reservationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header border-0 bg-light rounded-top-4">
+                    <h5 class="modal-title fw-bold text-success">Confirmer la réservation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <div class="display-1 mb-3">🎫</div>
+                    <h4 class="fw-bold mb-3">Voulez-vous vraiment réserver ?</h4>
+                    <p class="text-muted mb-0">Cette action déduira <strong><span id="modal-price"></span>
+                            Crédits</strong> de votre portefeuille virtuel.</p>
+                </div>
+                <div class="modal-footer border-0 d-flex justify-content-center pb-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4"
+                        data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-eco-accent rounded-pill px-4 fw-bold"
+                        onclick="processReservation()">Confirmer et Payer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="footer-container"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -95,13 +119,33 @@
                             </div>
                         </div>
                         
-                        <div class="p-4 rounded-4" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;">
-                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center">
-                                <div>
-                                    <div class="text-muted small mb-1">Prix par passager</div>
-                                    <h2 class="mb-3 mb-sm-0 text-dark fw-bold">${t.price} <span class="fs-5 fw-normal text-muted">Crédits</span></h2>
+                        <div class="p-4 rounded-4 shadow-sm border overflow-hidden position-relative bg-white" style="border-color: #bbf7d0 !important;">
+                            <!-- Background Decoration -->
+                            <div class="position-absolute" style="top: -20px; left: -20px; font-size: 8rem; opacity: 0.05; transform: rotate(-15deg); pointer-events: none;">🍃</div>
+                            <div class="position-absolute" style="bottom: -20px; right: -20px; font-size: 8rem; opacity: 0.05; transform: rotate(15deg); pointer-events: none;">🪙</div>
+                            
+                            <div class="row align-items-center position-relative">
+                                <div class="col-md-7">
+                                    <div class="badge bg-eco-accent rounded-pill mb-2 px-3">Contribution Éco-Solidaire</div>
+                                    <div class="text-muted small mb-1 fw-bold">PRIX DU TRAJET</div>
+                                    <div class="d-flex align-items-baseline flex-wrap">
+                                        <h1 class="display-3 fw-black mb-0 text-dark credit-glow" style="letter-spacing: -2px;">${t.price}</h1>
+                                        <span class="ms-2 fs-3 fw-bold text-muted me-3">Crédits</span>
+                                        ${t.price <= 20 ? `
+                                            <div class="d-inline-flex flex-column align-items-start border-start ps-3 ms-1" style="border-left: 2px solid #dee2e6 !important;">
+                                                <span class="text-danger fw-bold text-decoration-line-through small" style="opacity:0.6;">${Math.round(t.price * 1.5)} Crédits</span>
+                                                <span class="badge bg-danger rounded-pill fw-bold" style="font-size: 0.7rem;">ÉCONOMIE: -${Math.round(t.price * 0.5)} 🪙</span>
+                                            </div>
+                                        ` : ''}
+                                    </div>
                                 </div>
-                                <button class="btn btn-eco-accent btn-lg px-5 py-3 rounded-pill fw-bold" onclick="reserver(${t.id}, ${t.price})">Continuer</button>
+                                <div class="col-md-5 text-md-end mt-4 mt-md-0">
+                                    <button class="btn btn-eco btn-lg px-5 py-3 rounded-pill fw-bold shadow-sm pulse-animation w-100" 
+                                            onclick="confirmReservation(${t.id}, ${t.price})"
+                                            style="font-size: 1.2rem; min-height: 70px;">
+                                        🚀 Réserver Maintenant
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         </div>
@@ -113,25 +157,40 @@
             }
         }
 
-        async function reserver(tId, price) {
+        let selectedTripId = null;
+        let selectedTripPrice = null;
+
+        function confirmReservation(tId, price) {
             const user = JSON.parse(localStorage.getItem('ecoride_user'));
             if (!user) {
                 alert("Vous devez être connecté pour réserver.");
                 window.location.href = "connexion.html";
                 return;
             }
-            if (confirm(`Confirmez-vous la réservation avec un débit de ${price} crédits ?\n\nAppuyez sur OK pour valider (Double confirmation).`)) {
-                try {
-                    const res = await apiCall('reservations.php?action=create', 'POST', {
-                        trip_id: tId,
-                        passenger_id: user.id,
-                        price: price
-                    });
-                    alert(res.message);
-                    window.location.href = `espace-perso.html`;
-                } catch (e) {
-                    alert(e.message);
-                }
+            selectedTripId = tId;
+            selectedTripPrice = price;
+            document.getElementById('modal-price').textContent = price;
+            const modal = new bootstrap.Modal(document.getElementById('reservationModal'));
+            modal.show();
+        }
+
+        async function processReservation() {
+            const user = JSON.parse(localStorage.getItem('ecoride_user'));
+            try {
+                const res = await apiCall('reservations.php?action=create', 'POST', {
+                    trip_id: selectedTripId,
+                    passenger_id: user.id,
+                    price: selectedTripPrice
+                });
+                alert(res.message);
+
+                // Deduct credits locally so UI updates right away
+                user.credits -= selectedTripPrice;
+                localStorage.setItem('ecoride_user', JSON.stringify(user));
+
+                window.location.href = `espace-perso.html`;
+            } catch (e) {
+                alert(e.message);
             }
         }
 

@@ -8,8 +8,13 @@ CREATE TABLE IF NOT EXISTS users (
     pseudo VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    role ENUM('passager', 'chauffeur', 'employe', 'admin') DEFAULT 'passager',
+    role ENUM('passager', 'chauffeur', 'employe', 'admin', 'suspended') DEFAULT 'passager', -- Added suspended role
     credits INT DEFAULT 20,
+    photo VARCHAR(255) DEFAULT NULL,
+    bio TEXT DEFAULT NULL,
+    pref_smoking BOOLEAN DEFAULT FALSE,
+    pref_animals BOOLEAN DEFAULT FALSE,
+    pref_music BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -52,4 +57,16 @@ CREATE TABLE IF NOT EXISTS reservations (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE,
     FOREIGN KEY (passenger_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Incidents Table
+CREATE TABLE IF NOT EXISTS incidents (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    trip_id INT NOT NULL,
+    user_id INT NOT NULL,  -- Person who reported it
+    description TEXT NOT NULL,
+    status ENUM('open', 'resolved') DEFAULT 'open',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

@@ -54,8 +54,8 @@ class Trip
 
             $stmt->bindParam(":driver_id", $this->driver_id);
             $stmt->bindParam(":vehicle_id", $this->vehicle_id);
-            $stmt->bindParam(":departure_city", htmlspecialchars(strip_tags($this->departure_city)));
-            $stmt->bindParam(":destination_city", htmlspecialchars(strip_tags($this->destination_city)));
+            $stmt->bindValue(":departure_city", htmlspecialchars(strip_tags($this->departure_city)));
+            $stmt->bindValue(":destination_city", htmlspecialchars(strip_tags($this->destination_city)));
             $stmt->bindParam(":departure_date", $this->departure_date);
             $stmt->bindParam(":departure_time", $this->departure_time);
             $stmt->bindParam(":price", $this->price);
@@ -132,5 +132,31 @@ class Trip
         }
         $stmt->execute();
         return $stmt;
+    }
+
+    public function getByDriver($driver_id)
+    {
+        $query = "
+            SELECT t.id, t.departure_city, t.destination_city, t.departure_date, t.departure_time, 
+                   t.price, t.max_duration, t.max_seats, t.status, 
+                   v.model as vehicle_model, v.registration
+            FROM " . $this->table_name . " t
+            JOIN vehicles v ON t.vehicle_id = v.id
+            WHERE t.driver_id = :driver_id
+            ORDER BY t.id DESC
+        ";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':driver_id', $driver_id);
+        $stmt->execute();
+        return $stmt;
+    }
+    public function delete($id, $driver_id)
+    {
+        // Only allow deleting planned trips
+        $query = "DELETE FROM " . $this->table_name . " WHERE id = :id AND driver_id = :driver_id AND status = 'planned'";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':driver_id', $driver_id);
+        return $stmt->execute() && $stmt->rowCount() > 0;
     }
 }

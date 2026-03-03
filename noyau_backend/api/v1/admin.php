@@ -2,7 +2,7 @@
 // noyau_backend/api/v1/admin.php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: GET, PUT, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
@@ -13,62 +13,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once '../../configuration/db.php';
 require_once '../../configuration/mongo.php';
-require_once '../../models/Review.php';
+require_once '../../controllers/AdminController.php';
+require_once '../../controllers/ReviewController.php';
 
+$adminCtrl = new AdminController($pdo);
+$reviewCtrl = isset($mongoDb) ? new ReviewController($mongoDb) : null;
 $action = $_GET['action'] ?? '';
-$review = isset($mongoDb) ? new Review($mongoDb) : null;
+$method = $_SERVER['REQUEST_METHOD'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    if ($action === 'pending_reviews') {
-        if ($review) {
-            $reviews = $review->getPending();
+switch ($method) {
+    case 'GET':
+        if ($action === 'dashboard_stats') {
+            $res = $adminCtrl->getDashboardStats();
             http_response_code(200);
-            echo json_encode($reviews);
+            echo json_encode($res['stats'] ?? []);
+            exit;
         }
-        else {
-            http_response_code(500);
-            echo json_encode(["message" => "MongoDB non configuré."]);
+        else if ($action === 'list_incidents') {
+            $res = $adminCtrl->listIncidents();
+            http_response_code(200);
+            echo json_encode($res['incidents'] ?? []);
+            exit;
         }
-    }
-    else if ($action === 'dashboard_stats') {
-        // Pseudo logic for dashboard stats
-        // 1. Chart of carpools per day
-        $queryTrips = "SELECT DATE(created_at) as date, COUNT(*) as count FROM trips GROUP BY DATE(created_at) ORDER BY date DESC LIMIT 30";
-        $stmt = $pdo->prepare($queryTrips);
-        $stmt->execute();
-        $trips_per_day = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        else if ($action === 'pending_reviews' && $reviewCtrl) {
+            $res = $reviewCtrl->listPending();
+            http_response_code(200);
+            echo json_encode($res['reviews'] ?? []);
+            exit;
+        }
+        break;
 
-        // 2. Credits earned by platform
-        // Each trip earns 2 credits
-        $queryCredits = "SELECT COUNT(*) * 2 as total_credits FROM trips";
-        $stmtC = $pdo->prepare($queryCredits);
-        $stmtC->execute();
-        $credits_row = $stmtC->fetch(PDO::FETCH_ASSOC);
-        $total_credits = $credits_row['total_credits'] ?? 0;
+    case 'POST':
+        $data = json_decode(file_get_contents("php://input"));
+        if ($action === 'report_incident') {
+            $res = $adminCtrl->reportIncident($data);
+        }
+        break;
 
-        http_response_code(200);
-        echo json_encode([
-            "trips_per_day" => $trips_per_day,
-            "total_credits_earned" => $total_credits
-        ]);
-    }
+    case 'PUT':
+        $data = json_decode(file_get_contents("php://input"));
+        if ($action === 'moderate_review' && $reviewCtrl) {
+            $res = $reviewCtrl->moderate($data);
+        }
+        else if ($action === 'resolve_incident') {
+            $res = $adminCtrl->resolveIncident($data->incident_id ?? 0);
+        }
+        break;
 }
-else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-    $data = json_decode(file_get_contents("php://input"));
-    if ($action === 'moderate_review') {
-        if (!empty($data->review_id) && !empty($data->status) && $review) {
-            if ($review->updateStatus($data->review_id, $data->status)) {
-                http_response_code(200);
-                echo json_encode(["message" => "Avis modéré avec succès."]);
-            }
-            else {
-                http_response_code(503);
-                echo json_encode(["message" => "Impossible de modérer l'avis."]);
-            }
-        }
-        else {
-            http_response_code(400);
-            echo json_encode(["message" => "Données incomplètes."]);
-        }
-    }
+
+if (isset($res)) {
+    http_response_code($res['status']);
+    echo json_encode($res);
+}
+else {
+    http_response_code(400);
+    echo json_encode(["message" => "Requête invalide."]);
 }

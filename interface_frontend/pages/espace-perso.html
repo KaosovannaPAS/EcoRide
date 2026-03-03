@@ -31,28 +31,103 @@
                         </div>
                         <h4 class="fw-bold fs-4" id="user-pseudo">...</h4>
                         <p class="text-muted mb-3" id="user-role">...</p>
-                        <div class="p-3 rounded-4" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;">
-                            <h2 class="text-success mb-0 fw-bold" id="user-credits">...</h2>
-                            <p class="small text-muted mb-0 fw-bold">Crédits disponibles</p>
+                        <div class="p-3 rounded-4 shadow-sm border overflow-hidden position-relative mb-3"
+                            style="background: linear-gradient(135deg, #fff9e6, #fffde7); border-color: #ffe082 !important;">
+                            <div class="position-absolute top-0 end-0 p-2 opacity-10"
+                                style="font-size: 3rem; transform: rotate(15deg);">🪙</div>
+                            <h2 class="text-dark mb-0 fw-black pulse-animation" id="user-credits"
+                                style="font-size: 2.5rem; letter-spacing: -1px;">...</h2>
+                            <p class="small text-muted mb-0 fw-bold text-uppercase" style="letter-spacing: 1px;">Crédits
+                                disponibles</p>
                         </div>
                     </div>
 
                     <div class="list-group shadow-sm rounded-4 border-0">
                         <button class="list-group-item list-group-item-action active fw-bold border-0 py-3"
-                            data-bs-toggle="list" data-bs-target="#vehicules" type="button"
-                            style="border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;">🚗 Mes
-                            Véhicules</button>
+                            data-bs-toggle="list" data-bs-target="#reservations" type="button"
+                            style="border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;">🎫 Mes
+                            Réservations</button>
+                        <button class="list-group-item list-group-item-action fw-bold border-0 py-3"
+                            data-bs-toggle="list" data-bs-target="#mes-trajets" type="button">🛣️ Mes Trajets
+                            (Chauffeur)</button>
+                        <button class="list-group-item list-group-item-action fw-bold border-0 py-3"
+                            data-bs-toggle="list" data-bs-target="#profil" type="button">👤 Mon Profil</button>
+                        <button class="list-group-item list-group-item-action fw-bold border-0 py-3"
+                            data-bs-toggle="list" data-bs-target="#vehicules" type="button">🚗 Mes Véhicules</button>
                         <button class="list-group-item list-group-item-action fw-bold border-0 py-3"
                             data-bs-toggle="list" data-bs-target="#publier" type="button"
                             style="border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);">➕ Publier un
                             trajet</button>
                         <!-- Admin Dashboard Link injected here if role=admin/employe -->
-                        <div id="admin-links"></div>
+                        <div id="admin-links">
+                            <script>
+                                const u = JSON.parse(localStorage.getItem('ecoride_user'));
+                                if (u && (u.role === 'admin' || u.role === 'employe')) {
+                                    document.write(`<a href="admin.html" class="list-group-item list-group-item-action fw-bold border-0 py-3 text-danger">🛠️ Dashboard Admin</a>`);
+                                }
+                            </script>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-md-9">
                     <div class="tab-content" id="nav-tabContent">
+                        <!-- Profil Tab -->
+                        <div class="tab-pane fade" id="profil">
+                            <div class="card p-5 shadow-sm border-0 rounded-4">
+                                <h3 class="fw-bold mb-4" style="color: var(--eco-primary);">Mon Profil & Préférences
+                                </h3>
+                                <form id="profile-form" class="row g-4">
+                                    <div class="col-12 text-center mb-3">
+                                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-2 border"
+                                            style="width: 120px; height: 120px; overflow: hidden;"
+                                            id="profile-photo-preview">
+                                            <span class="fs-1">👤</span>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill"
+                                            onclick="promptPhoto()">Changer la photo (URL)</button>
+                                        <input type="hidden" id="p-photo">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold">Biographie</label>
+                                        <textarea class="form-control rounded-4" id="p-bio" rows="3"
+                                            placeholder="Parlez-nous de vous..."></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <h6 class="fw-bold mb-3">Mes Préférences</h6>
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <div class="form-check form-switch bg-light p-3 rounded-4">
+                                                    <input class="form-check-input ms-0 me-2" type="checkbox"
+                                                        id="p-smoking">
+                                                    <label class="form-check-label" for="p-smoking">🚬 Fumeur</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-check form-switch bg-light p-3 rounded-4">
+                                                    <input class="form-check-input ms-0 me-2" type="checkbox"
+                                                        id="p-animals">
+                                                    <label class="form-check-label" for="p-animals">🐾 Animaux</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-check form-switch bg-light p-3 rounded-4">
+                                                    <input class="form-check-input ms-0 me-2" type="checkbox"
+                                                        id="p-music">
+                                                    <label class="form-check-label" for="p-music">🎵 Musique</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 text-end">
+                                        <button type="submit"
+                                            class="btn btn-eco-accent rounded-pill px-5 py-2 fw-bold shadow-sm">Enregistrer
+                                            les modifications</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
                         <!-- Véhicules Tab -->
                         <div class="tab-pane fade show active" id="vehicules">
                             <div class="card p-5 shadow-sm border-0 rounded-4">
@@ -279,8 +354,218 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', loadVehicles);
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProfile();
+            loadVehicles();
+            loadDriverTrips();
+            loadReservations();
+        });
+
+        function promptPhoto() {
+            const url = prompt("Veuillez entrer l'URL de votre photo de profil :");
+            if (url) {
+                document.getElementById('p-photo').value = url;
+                document.getElementById('profile-photo-preview').innerHTML = `<img src="${url}" class="w-100 h-100" style="object-fit: cover;">`;
+            }
+        }
+
+        async function loadProfile() {
+            try {
+                const p = await apiCall(`users.php?action=get_profile&user_id=${user.id}`);
+                document.getElementById('p-bio').value = p.bio || '';
+                document.getElementById('p-photo').value = p.photo || '';
+                document.getElementById('p-smoking').checked = p.pref_smoking == 1;
+                document.getElementById('p-animals').checked = p.pref_animals == 1;
+                document.getElementById('p-music').checked = p.pref_music == 1;
+
+                if (p.photo) {
+                    document.getElementById('profile-photo-preview').innerHTML = `<img src="${p.photo}" class="w-100 h-100" style="object-fit: cover;">`;
+                    document.getElementById('user-avatar-initial').innerHTML = `<img src="${p.photo}" class="w-100 h-100 rounded-circle" style="object-fit: cover;">`;
+                } else {
+                    document.getElementById('user-avatar-initial').textContent = p.pseudo.charAt(0).toUpperCase();
+                }
+
+                document.getElementById('user-pseudo').textContent = p.pseudo;
+                document.getElementById('user-role').textContent = p.role.charAt(0).toUpperCase() + p.role.slice(1);
+                document.getElementById('user-credits').textContent = p.credits;
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await apiCall('users.php?action=update_profile', 'PUT', {
+                    user_id: user.id,
+                    bio: document.getElementById('p-bio').value,
+                    photo: document.getElementById('p-photo').value,
+                    pref_smoking: document.getElementById('p-smoking').checked,
+                    pref_animals: document.getElementById('p-animals').checked,
+                    pref_music: document.getElementById('p-music').checked
+                });
+                alert("Profil mis à jour !");
+                loadProfile();
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        async function loadDriverTrips() {
+            try {
+                const trips = await apiCall(`trips.php?action=list_by_driver&driver_id=${user.id}`);
+                const list = document.getElementById('trips-driver-list');
+
+                if (trips.length === 0) {
+                    list.innerHTML = '<div class="col-12 text-muted">Vous n\'avez publié aucun trajet.</div>';
+                    return;
+                }
+
+                list.innerHTML = trips.map(t => {
+                    let actions = '';
+                    if (t.status === 'planned') {
+                        actions = `<button class="btn btn-sm btn-success fw-bold me-2" onclick="changeTripStatus(${t.id}, 'started')">▶️ Démarrer</button>
+                                   <button class="btn btn-sm btn-outline-danger fw-bold" onclick="changeTripStatus(${t.id}, 'cancelled')">❌ Annuler</button>`;
+                    } else if (t.status === 'started') {
+                        actions = `<button class="btn btn-sm btn-eco-accent fw-bold" onclick="changeTripStatus(${t.id}, 'finished')">✅ Terminer</button>`;
+                    } else if (t.status === 'finished') {
+                        actions = `<span class="badge bg-secondary">Terminé</span>`;
+                    } else if (t.status === 'cancelled') {
+                        actions = `<span class="badge bg-danger">Annulé</span>`;
+                    }
+
+                    return `
+                    <div class="col-md-12">
+                        <div class="p-4 border rounded-4 d-flex justify-content-between align-items-center bg-light">
+                            <div>
+                                <strong class="fs-5">${t.departure_city} ➔ ${t.destination_city}</strong><br>
+                                <small class="text-muted">${t.departure_date} à ${t.departure_time} - ${t.price} Crédits</small><br>
+                                <span class="badge bg-primary rounded-pill mt-2">Statut: ${t.status}</span>
+                            </div>
+                            <div>
+                                ${actions}
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error(error);
+                document.getElementById('trips-driver-list').innerHTML = `<div class="col-12 text-danger">Erreur: ${error.message}</div>`;
+            }
+        }
+
+        async function changeTripStatus(tripId, status) {
+            if (!confirm(`Voulez-vous marquer ce trajet comme '${status}' ?`)) return;
+            try {
+                await apiCall('trips.php?action=update_status', 'PUT', {
+                    trip_id: tripId,
+                    driver_id: user.id,
+                    status: status
+                });
+
+                if (status === 'cancelled') {
+                    console.log(`[SIMULATION MAIL] Notification envoyée aux passagers pour l'annulation du trajet #${tripId}`);
+                    alert("Trajet annulé. Une notification a été envoyée aux passagers.");
+                } else {
+                    alert("Statut mis à jour !");
+                }
+                loadDriverTrips();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        async function loadReservations() {
+            try {
+                const reservations = await apiCall(`reservations.php?action=list_by_passenger&passenger_id=${user.id}`);
+                const list = document.getElementById('reservations-list');
+
+                if (reservations.length === 0) {
+                    list.innerHTML = '<div class="col-12 text-muted">Vous n\'avez aucune réservation.</div>';
+                    return;
+                }
+
+                list.innerHTML = reservations.map(r => {
+                    let statusColor = r.reservation_status === 'pending' ? 'bg-warning' : (r.reservation_status === 'confirmed' ? 'bg-success' : 'bg-danger');
+                    let statusText = r.reservation_status === 'pending' ? 'En attente' : (r.reservation_status === 'confirmed' ? 'Confirmé' : 'Annulé');
+
+                    return `
+                    <div class="col-md-12">
+                        <div class="p-4 border rounded-4 bg-light">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <strong class="fs-5">${r.departure_city} ➔ ${r.destination_city}</strong>
+                                <span class="badge ${statusColor} rounded-pill">${statusText}</span>
+                            </div>
+                            <small class="text-muted d-block mb-3">Le ${r.departure_date} à ${r.departure_time} - ${r.price} Crédits</small>
+                            <small class="text-secondary fw-bold">Chauffeur: ${r.driver_pseudo}</small>
+                            <div class="mt-3 text-end">
+                                <button class="btn btn-sm btn-outline-danger rounded-pill" onclick="showIncidentModal(${r.trip_id})">⚠️ Signaler un incident</button>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error(error);
+                document.getElementById('reservations-list').innerHTML = `<div class="col-12 text-danger">Erreur: ${error.message}</div>`;
+            }
+        }
+
+        function showIncidentModal(tripId) {
+            document.getElementById('incident-trip-id').value = tripId;
+            new bootstrap.Modal(document.getElementById('incidentModal')).show();
+        }
+
+        async function submitIncident() {
+            const tripId = document.getElementById('incident-trip-id').value;
+            const desc = document.getElementById('incident-desc').value;
+            if (!desc) return alert("Veuillez décrire l'incident.");
+
+            try {
+                await apiCall('admin.php?action=report_incident', 'POST', {
+                    trip_id: tripId,
+                    user_id: user.id,
+                    description: desc
+                });
+                alert("Incident signalé. Un employé traitera votre demande.");
+                bootstrap.Modal.getInstance(document.getElementById('incidentModal')).hide();
+                document.getElementById('incident-desc').value = '';
+            } catch (error) {
+                alert(error.message);
+            }
+        }
     </script>
+
+    <!-- Incident Modal -->
+    <div class="modal fade" id="incidentModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold">Signaler un incident</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="incident-trip-id">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description de l'incident</label>
+                        <textarea class="form-control rounded-4" id="incident-desc" rows="4"
+                            placeholder="Ex: Chauffeur en retard, comportement inapproprié..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4"
+                        data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-danger rounded-pill px-4" onclick="submitIncident()">Envoyer le
+                        signalement</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

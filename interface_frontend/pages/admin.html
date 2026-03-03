@@ -19,32 +19,130 @@
             <span class="badge bg-danger rounded-pill px-3 py-2">Accès Restreint</span>
         </div>
 
-        <div class="row mb-5 g-4">
-            <div class="col-md-6">
-                <div class="card p-5 text-center bg-white shadow-sm h-100 border-0 rounded-4"
-                    style="border-top: 6px solid var(--eco-primary) !important;">
-                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-3 text-primary fs-3"
-                        style="width: 64px; height: 64px; color: var(--eco-primary) !important;">💰</div>
-                    <h5 class="text-muted fw-bold text-uppercase small">Crédits générés par la plateforme</h5>
-                    <h1 class="display-3 fw-bold mt-2" style="color: var(--eco-primary);" id="stat-credits">0</h1>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card p-5 text-center bg-white shadow-sm h-100 border-0 rounded-4"
-                    style="border-top: 6px solid var(--eco-accent) !important;">
-                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-3 text-success fs-3"
-                        style="width: 64px; height: 64px;">🚗</div>
-                    <h5 class="text-muted fw-bold text-uppercase small">Trajets créés aujourd'hui</h5>
-                    <h1 class="display-3 text-success fw-bold mt-2" id="stat-trips-today">0</h1>
-                </div>
-            </div>
-        </div>
+        <ul class="nav nav-pills nav-fill mb-4 bg-white p-2 rounded-4 shadow-sm" id="adminTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active fw-bold" data-bs-toggle="pill" data-bs-target="#stats-tab"
+                    type="button">📊 Statistiques</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-bold" data-bs-toggle="pill" data-bs-target="#reviews-tab" type="button">⭐
+                    Modération Avis</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-bold" data-bs-toggle="pill" data-bs-target="#users-tab" type="button">👥
+                    Gestion Utilisateurs</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-bold" data-bs-toggle="pill" data-bs-target="#incidents-tab" type="button">⚠️
+                    Incidents</button>
+            </li>
+        </ul>
 
-        <h3 class="fw-bold mb-4" style="color: var(--eco-primary);">Modération des avis</h3>
-        <div class="card p-5 shadow-sm border-0 rounded-4 bg-white">
-            <div id="reviews-container">
-                <div class="text-center py-5">
-                    <div class="spinner-border text-secondary" style="width: 3rem; height: 3rem;"></div>
+        <div class="tab-content" id="adminTabsContent">
+            <!-- Stats Tab -->
+            <div class="tab-pane fade show active" id="stats-tab">
+                <div class="row mb-5 g-4">
+                    <div class="col-md-6">
+                        <div class="card p-5 text-center bg-white shadow-sm h-100 border-0 rounded-4"
+                            style="border-top: 6px solid var(--eco-primary) !important;">
+                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-3 text-primary fs-3"
+                                style="width: 64px; height: 64px; color: var(--eco-primary) !important;">💰</div>
+                            <h5 class="text-muted fw-bold text-uppercase small">Crédits générés</h5>
+                            <h1 class="display-3 fw-bold mt-2" style="color: var(--eco-primary);" id="stat-credits">0
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card p-5 text-center bg-white shadow-sm h-100 border-0 rounded-4"
+                            style="border-top: 6px solid var(--eco-accent) !important;">
+                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-3 text-success fs-3"
+                                style="width: 64px; height: 64px;">🚗</div>
+                            <h5 class="text-muted fw-bold text-uppercase small">Trajets (Volume total)</h5>
+                            <h1 class="display-3 text-success fw-bold mt-2" id="stat-trips-today">0</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews Tab -->
+            <div class="tab-pane fade" id="reviews-tab">
+                <h3 class="fw-bold mb-4" style="color: var(--eco-primary);">Modération des avis</h3>
+                <div class="card p-5 shadow-sm border-0 rounded-4 bg-white">
+                    <div id="reviews-container">
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-secondary" style="width: 3rem; height: 3rem;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div class="tab-pane fade" id="users-tab">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="card p-4 shadow-sm border-0 rounded-4 bg-white">
+                            <h4 class="fw-bold mb-4">Créer un Employé</h4>
+                            <form id="create-employe-form">
+                                <div class="mb-3">
+                                    <label class="form-label">Pseudo</label>
+                                    <input type="text" id="emp-pseudo" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" id="emp-email" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Mot de passe</label>
+                                    <input type="password" id="emp-password" class="form-control" required>
+                                </div>
+                                <button type="submit" class="btn btn-eco-accent w-100 rounded-pill fw-bold">Créer le
+                                    compte</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="card p-4 shadow-sm border-0 rounded-4 bg-white">
+                            <h4 class="fw-bold mb-4">Liste des Utilisateurs</h4>
+                            <div class="table-responsive">
+                                <table class="table align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Utilisateur</th>
+                                            <th>Email</th>
+                                            <th>Rôle</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="users-list-container">
+                                        <!-- Users injected here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Incidents Tab -->
+            <div class="tab-pane fade" id="incidents-tab">
+                <h3 class="fw-bold mb-4" style="color: var(--eco-primary);">Suivi des incidents</h3>
+                <div class="card p-5 shadow-sm border-0 rounded-4 bg-white">
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Trajet</th>
+                                    <th>Signalé par</th>
+                                    <th>Description</th>
+                                    <th>Statut</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="incidents-list-container">
+                                <!-- Incidents injected here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -67,9 +165,11 @@
         fetch('../composants/footer.html').then(r => r.text()).then(d => document.getElementById('footer-container').innerHTML = d);
 
         const user = JSON.parse(localStorage.getItem('ecoride_user'));
-        if (!user || (user.role !== 'admin' && user.role !== 'employe')) {
-            alert("Accès refusé. Vous n'êtes pas administrateur ou employé.");
-            window.location.href = 'index.html';
+        if (user.role !== 'admin') {
+            document.querySelectorAll('[data-bs-target="#users-tab"], [data-bs-target="#stats-tab"]').forEach(el => el.style.display = 'none');
+            // Auto switch to reviews tab for employees
+            const reviewsTab = new bootstrap.Tab(document.querySelector('[data-bs-target="#reviews-tab"]'));
+            reviewsTab.show();
         }
 
         async function loadDashboard() {
@@ -87,7 +187,107 @@
             } catch (error) {
                 console.error(error);
             }
+            loadUsers();
+            loadIncidents();
         }
+
+        async function loadIncidents() {
+            try {
+                const incidents = await apiCall('admin.php?action=list_incidents');
+                renderIncidents(incidents);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function renderIncidents(incidents) {
+            const container = document.getElementById('incidents-list-container');
+            if (incidents.length === 0) {
+                container.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Aucun incident à signaler.</td></tr>';
+                return;
+            }
+            container.innerHTML = incidents.map(i => `
+                <tr>
+                    <td><strong>${i.departure_city} ➜ ${i.destination_city}</strong></td>
+                    <td>${i.reporter}</td>
+                    <td><small>${i.description}</small></td>
+                    <td><span class="badge ${i.status === 'open' ? 'bg-warning' : 'bg-success'} rounded-pill">${i.status === 'open' ? 'Ouvert' : 'Résolu'}</span></td>
+                    <td>
+                        ${i.status === 'open' ? `<button class="btn btn-sm btn-success rounded-pill" onclick="resolveIncident(${i.id})">Résoudre</button>` : '---'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function resolveIncident(id) {
+            if (!confirm("Marquer cet incident comme résolu ?")) return;
+            try {
+                await apiCall('admin.php?action=resolve_incident', 'PUT', { incident_id: id });
+                loadIncidents();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        async function loadUsers() {
+            try {
+                const users = await apiCall('users.php?action=list');
+                renderUsers(users);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function renderUsers(users) {
+            const container = document.getElementById('users-list-container');
+            container.innerHTML = users.map(u => {
+                let badgeClass = u.role === 'admin' ? 'bg-danger' : (u.role === 'employe' ? 'bg-primary' : (u.role === 'suspended' ? 'bg-dark' : 'bg-success'));
+                let statusText = u.role.charAt(0).toUpperCase() + u.role.slice(1);
+
+                let actions = u.role === 'admin' ? '' : `
+                    <button class="btn btn-sm btn-outline-dark rounded-pill me-1" onclick="updateUserRole(${u.id}, '${u.role === 'suspended' ? 'passager' : 'suspended'}')">
+                        ${u.role === 'suspended' ? 'Réactiver' : 'Suspendre'}
+                    </button>
+                    ${u.role !== 'employe' ? `<button class="btn btn-sm btn-outline-primary rounded-pill" onclick="updateUserRole(${u.id}, 'employe')">Promouvoir</button>` : ''}
+                `;
+
+                return `
+                    <tr>
+                        <td><strong>${u.pseudo}</strong></td>
+                        <td><small>${u.email}</small></td>
+                        <td><span class="badge ${badgeClass} rounded-pill">${statusText}</span></td>
+                        <td>${actions}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function updateUserRole(userId, newRole) {
+            if (!confirm("Souhaitez-vous modifier le rôle de cet utilisateur ?")) return;
+            try {
+                await apiCall('users.php?action=update_role', 'PUT', { user_id: userId, role: newRole });
+                loadUsers();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        document.getElementById('create-employe-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await apiCall('users.php?action=register', 'POST', {
+                    pseudo: document.getElementById('emp-pseudo').value,
+                    email: document.getElementById('emp-email').value,
+                    password: document.getElementById('emp-password').value,
+                    role: 'employe'
+                });
+                alert("Compte employé créé !");
+                document.getElementById('create-employe-form').reset();
+                loadUsers();
+            } catch (error) {
+                alert(error.message);
+            }
+        });
 
         async function loadPendingReviews() {
             try {

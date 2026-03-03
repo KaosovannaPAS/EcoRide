@@ -73,4 +73,22 @@ class Reservation
         $stmt->bindParam(':id', $id);
         return $stmt->execute() && $stmt->rowCount() > 0;
     }
+
+    public function getByPassenger($passenger_id)
+    {
+        $query = "
+            SELECT r.id as reservation_id, r.status as reservation_status, 
+                   t.id as trip_id, t.departure_city, t.destination_city, t.departure_date, t.departure_time, t.price, t.status as trip_status,
+                   u.pseudo as driver_pseudo
+            FROM " . $this->table_name . " r
+            JOIN trips t ON r.trip_id = t.id
+            JOIN users u ON t.driver_id = u.id
+            WHERE r.passenger_id = :passenger_id
+            ORDER BY r.id DESC
+        ";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':passenger_id', $passenger_id);
+        $stmt->execute();
+        return $stmt;
+    }
 }

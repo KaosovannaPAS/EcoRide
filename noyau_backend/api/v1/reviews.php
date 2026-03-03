@@ -2,7 +2,7 @@
 // noyau_backend/api/v1/reviews.php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+header("Access-Control-Allow-Methods: POST, GET, PUT, OPTIONS");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
@@ -12,42 +12,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once '../../configuration/mongo.php';
-require_once '../../models/Review.php';
+require_once '../../controllers/ReviewController.php';
 
+$controller = isset($mongoDb) ? new ReviewController($mongoDb) : null;
 $action = $_GET['action'] ?? '';
-$review = isset($mongoDb) ? new Review($mongoDb) : null;
+$method = $_SERVER['REQUEST_METHOD'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents("php://input"));
+if (!$controller) {
+    http_response_code(503);
+    echo json_encode(["message" => "MongoDB non disponible."]);
+    exit;
+}
 
-    if ($action === 'create') {
-        if (!empty($data->trip_id) && !empty($data->reviewer_id) && isset($data->reviewee_id) && isset($data->rating) && !empty($data->comment)) {
-            if ($review && $review->create($data->trip_id, $data->reviewer_id, $data->reviewee_id, $data->rating, $data->comment)) {
-                http_response_code(201);
-                echo json_encode(["message" => "Avis soumis et en attente de modération."]);
-            }
-            else {
-                http_response_code(503);
-                echo json_encode(["message" => "Impossible de soumettre l'avis."]);
-            }
+switch ($method) {
+    case 'POST':
+        $data = json_decode(file_get_contents("php://input"));
+        if ($action === 'create') {
+            $res = $controller->create($data);
         }
         else {
-            http_response_code(400);
-            echo json_encode(["message" => "Données incomplètes."]);
+            $res = ["status" => 400, "message" => "Action inconnue."];
         }
-    }
-}
-else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    if ($action === 'approved') {
-        $reviewee_id = $_GET['user_id'] ?? null;
-        if ($reviewee_id && $review) {
+        break;
+
+    case 'GET':
+        if ($action === 'approved') {
+            $reviewee_id = $_GET['user_id'] ?? 0;
+            $review = new Review($mongoDb);
             $reviews = $review->getApprovedByReviewee($reviewee_id);
             http_response_code(200);
             echo json_encode($reviews);
+            exit;
+        }
+        else if ($action === 'pending') {
+            $res = $controller->listPending();
+            http_response_code(200);
+            echo json_encode($res['reviews'] ?? []);
+            exit;
         }
         else {
-            http_response_code(400);
-            echo json_encode(["message" => "user_id manquant ou erreur serveur."]);
+            $res = ["status" => 400, "message" => "Action inconnue."];
         }
-    }
+        break;
+
+    case 'PUT':
+        $data = json_decode(file_get_contents("php://input"));
+        if ($action === 'moderate') {
+            $res = $controller->moderate($data);
+        }
+        else {
+            $res = ["status" => 400, "message" => "Action inconnue."];
+        }
+        break;
+
+    default:
+        $res = ["status" => 405, "message" => "Méthode non autorisée."];
+        break;
 }
+
+http_response_code($res['status']);
+echo json_encode($res);

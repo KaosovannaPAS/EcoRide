@@ -2,7 +2,7 @@
 // noyau_backend/api/v1/trips.php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST, GET, PUT, OPTIONS");
+header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
@@ -12,78 +12,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once '../../configuration/db.php';
-require_once '../../models/Trip.php';
+require_once '../../controllers/TripController.php';
 
+$controller = new TripController($pdo);
 $action = $_GET['action'] ?? '';
-$trip = new Trip($pdo);
+$method = $_SERVER['REQUEST_METHOD'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents("php://input"));
-
-    if ($action === 'create') {
-        if (!empty($data->driver_id) && !empty($data->vehicle_id) &&
-        !empty($data->departure_city) && !empty($data->destination_city) &&
-        !empty($data->departure_date) && !empty($data->departure_time) &&
-        isset($data->price) && !empty($data->max_duration) && !empty($data->max_seats)) {
-
-            $trip->driver_id = $data->driver_id;
-            $trip->vehicle_id = $data->vehicle_id;
-            $trip->departure_city = $data->departure_city;
-            $trip->destination_city = $data->destination_city;
-            $trip->departure_date = $data->departure_date;
-            $trip->departure_time = $data->departure_time;
-            $trip->price = $data->price;
-            $trip->max_duration = $data->max_duration;
-            $trip->max_seats = $data->max_seats;
-
-            if ($trip->create()) {
-                http_response_code(201);
-                echo json_encode(["message" => "Trajet publié avec succès. 2 crédits prélevés."]);
-            }
-            else {
-                http_response_code(503);
-                echo json_encode(["message" => "Impossible de publier le trajet. Vérifiez votre solde de crédits."]);
-            }
+switch ($method) {
+    case 'POST':
+        $data = json_decode(file_get_contents("php://input"));
+        if ($action === 'create') {
+            $res = $controller->create($data);
         }
         else {
-            http_response_code(400);
-            echo json_encode(["message" => "Données incomplètes."]);
+            $res = ["status" => 400, "message" => "Action inconnue."];
         }
-    }
-}
-else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-    $data = json_decode(file_get_contents("php://input"));
-    if ($action === 'update_status') {
-        if (!empty($data->trip_id) && !empty($data->driver_id) && !empty($data->status)) {
-            if ($trip->updateStatus($data->trip_id, $data->driver_id, $data->status)) {
-                http_response_code(200);
-                echo json_encode(["message" => "Statut mis à jour."]);
-            }
-            else {
-                http_response_code(503);
-                echo json_encode(["message" => "Impossible de mettre à jour le statut."]);
-            }
-        }
-    }
-}
-else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    if ($action === 'search') {
-        $filters = [
-            'departure_city' => $_GET['departure_city'] ?? null,
-            'destination_city' => $_GET['destination_city'] ?? null,
-            'departure_date' => $_GET['departure_date'] ?? null,
-            'max_price' => $_GET['max_price'] ?? null,
-            'max_duration' => $_GET['max_duration'] ?? null,
-            'is_electric' => $_GET['is_electric'] ?? null
-        ];
+        break;
 
-        $stmt = $trip->search($filters);
-        $trips_arr = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $trips_arr[] = $row;
+    case 'GET':
+        if ($action === 'search') {
+            $filters = [
+                'departure_city' => $_GET['departure_city'] ?? null,
+                'destination_city' => $_GET['destination_city'] ?? null,
+                'departure_date' => $_GET['departure_date'] ?? null,
+                'max_price' => $_GET['max_price'] ?? null,
+                'max_duration' => $_GET['max_duration'] ?? null,
+                'is_electric' => $_GET['is_electric'] ?? null
+            ];
+            $res = $controller->search($filters);
+            // Compatibility
+            http_response_code(200);
+            echo json_encode($res['trips'] ?? []);
+            exit;
         }
+        else if ($action === 'list_by_driver') {
+            $res = $controller->getByDriver($_GET['driver_id'] ?? null);
+            http_response_code($res['status']);
+            echo json_encode($res['trips'] ?? []);
+            exit;
+        }
+        else {
+            $res = ["status" => 400, "message" => "Action inconnue."];
+        }
+        break;
 
-        http_response_code(200);
-        echo json_encode($trips_arr);
-    }
+    case 'PUT':
+        $data = json_decode(file_get_contents("php://input"));
+        if ($action === 'update_status') {
+            $res = $controller->updateStatus($data);
+        }
+        else {
+            $res = ["status" => 400, "message" => "Action inconnue."];
+        }
+        break;
+
+    default:
+        $res = ["status" => 405, "message" => "Méthode non autorisée."];
+        break;
 }
+
+http_response_code($res['status']);
+echo json_encode($res);
