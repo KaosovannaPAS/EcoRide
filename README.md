@@ -13,10 +13,10 @@ EcoRide est une application web conçue pour réduire l'impact environnemental d
 
 ## 🛠️ Stack Technique
 
-*   **Frontend :** HTML5, CSS3, JavaScript (Vanilla ES6+), Bootstrap 5.3.0
-*   **Backend :** PHP 8.2 (Architecture API-Centric, Programmation Orientée Objet, PDO)
-*   **Base de Données :** MySQL (Données relationnelles : Utilisateurs, Trajets, Véhicules) & MongoDB (Logs, Avis clients)
-*   **Déploiement :** Docker / Docker Compose prêt pour l'hébergement (ex: sur Render ou Vercel pour le front, VPS/Heroku pour le back).
+*   **Frontend :** HTML5, CSS3 (Bootstrap), JavaScript natif.
+*   **Backend :** PHP 8.2 avec l'extension PDO pour la sécurité (anti-injection SQL).
+*   **Bases de données :** Utilisation d'une base relationnelle (MySQL) ET d'une base NoSQL (MongoDB).
+*   **Environnement :** Docker (Dockerfile et docker-compose.yml)
 
 ## 📁 Architecture du Projet
 
