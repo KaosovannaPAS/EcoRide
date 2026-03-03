@@ -14,30 +14,37 @@
     <div id="header-container"></div>
 
     <main class="container my-5 flex-grow-1">
-        <h2 class="mb-4 text-danger fw-bold border-bottom pb-2">Espace Administration</h2>
+        <div class="d-flex align-items-center mb-5 border-bottom pb-3">
+            <h2 class="mb-0 text-danger fw-bold me-3">Espace Administration</h2>
+            <span class="badge bg-danger rounded-pill px-3 py-2">Accès Restreint</span>
+        </div>
 
-        <div class="row mb-5">
-            <div class="col-md-6 mb-3">
-                <div
-                    class="card p-4 text-center bg-white shadow-sm h-100 border-0 border-start border-5 border-success">
-                    <h5 class="text-muted fw-bold">Crédits générés par la plateforme</h5>
-                    <h1 class="display-3 text-success fw-bold mt-2" id="stat-credits">0</h1>
+        <div class="row mb-5 g-4">
+            <div class="col-md-6">
+                <div class="card p-5 text-center bg-white shadow-sm h-100 border-0 rounded-4"
+                    style="border-top: 6px solid var(--eco-primary) !important;">
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-3 text-primary fs-3"
+                        style="width: 64px; height: 64px; color: var(--eco-primary) !important;">💰</div>
+                    <h5 class="text-muted fw-bold text-uppercase small">Crédits générés par la plateforme</h5>
+                    <h1 class="display-3 fw-bold mt-2" style="color: var(--eco-primary);" id="stat-credits">0</h1>
                 </div>
             </div>
-            <div class="col-md-6 mb-3">
-                <div
-                    class="card p-4 text-center bg-white shadow-sm h-100 border-0 border-start border-5 border-primary">
-                    <h5 class="text-muted fw-bold">Trajets créés</h5>
-                    <h1 class="display-3 text-primary fw-bold mt-2" id="stat-trips-today">0</h1>
+            <div class="col-md-6">
+                <div class="card p-5 text-center bg-white shadow-sm h-100 border-0 rounded-4"
+                    style="border-top: 6px solid var(--eco-accent) !important;">
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-3 text-success fs-3"
+                        style="width: 64px; height: 64px;">🚗</div>
+                    <h5 class="text-muted fw-bold text-uppercase small">Trajets créés aujourd'hui</h5>
+                    <h1 class="display-3 text-success fw-bold mt-2" id="stat-trips-today">0</h1>
                 </div>
             </div>
         </div>
 
-        <h3 class="mb-3">Modération des avis</h3>
-        <div class="card p-4 shadow-sm">
+        <h3 class="fw-bold mb-4" style="color: var(--eco-primary);">Modération des avis</h3>
+        <div class="card p-5 shadow-sm border-0 rounded-4 bg-white">
             <div id="reviews-container">
-                <div class="text-center py-4">
-                    <div class="spinner-border text-secondary"></div>
+                <div class="text-center py-5">
+                    <div class="spinner-border text-secondary" style="width: 3rem; height: 3rem;"></div>
                 </div>
             </div>
         </div>
@@ -98,20 +105,24 @@
                 return;
             }
 
-            let html = '<div class="list-group">';
+            let html = '<div class="list-group rounded-4 shadow-sm">';
             reviews.forEach(r => {
                 let id = r._id.$oid || r._id;
                 html += `
-                    <div class="list-group-item list-group-item-action p-4 border rounded mb-2">
-                        <div class="d-flex w-100 justify-content-between mb-2">
-                            <h5 class="mb-1 text-dark fw-bold">Avis pour l'utilisateur #${r.reviewee_id}</h5>
-                            <span class="badge bg-warning text-dark fs-5 shadow-sm">${r.rating} / 5</span>
+                    <div class="list-group-item list-group-item-action p-4 border-end-0 border-start-0 border-top-0 border-bottom mb-0">
+                        <div class="d-flex w-100 justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0 text-dark fw-bold">Avis pour l'utilisateur #${r.reviewee_id}</h5>
+                            <span class="badge bg-light text-dark fs-6 px-3 py-2 rounded-pill border shadow-sm">⭐ ${r.rating} / 5</span>
                         </div>
-                        <p class="mb-3 fs-5 fst-italic text-secondary">"${r.comment}"</p>
-                        <div class="text-end border-top pt-3">
-                            <span class="text-muted small float-start mt-2">Par l'utilisateur #${r.reviewer_id}</span>
-                            <button class="btn btn-outline-danger px-4 fw-bold me-2" onclick="moderate('${id}', 'rejected')">Rejeter</button>
-                            <button class="btn btn-success px-4 fw-bold" onclick="moderate('${id}', 'approved')">Approuver</button>
+                        <div class="p-4 rounded-4 mb-3" style="background-color: var(--eco-bg);">
+                            <p class="mb-0 fs-5 text-secondary fst-italic">"${r.comment}"</p>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="text-muted small fw-bold text-uppercase">Rédigé par Utilisateur #${r.reviewer_id}</span>
+                            <div>
+                                <button class="btn btn-outline-danger rounded-pill px-4 fw-bold me-2" onclick="moderate('${id}', 'rejected')">Rejeter</button>
+                                <button class="btn btn-eco-accent rounded-pill px-4 fw-bold" onclick="moderate('${id}', 'approved')">Approuver</button>
+                            </div>
                         </div>
                     </div>
                 `;

@@ -16,50 +16,63 @@
     <main>
         <section class="hero-section">
             <div class="container">
-                <h1 class="display-4 fw-bold">Voyagez vert avec EcoRide</h1>
-                <p class="lead">Réduisez votre empreinte carbone en partageant vos trajets.</p>
+                <h1 class="fw-bold mb-3">Vos trajets écologiques à petits prix</h1>
+                <p class="lead text-muted mb-5">Rejoignez-nous et voyagez vert partout en France.</p>
 
-                <div class="card mt-4 p-4 mx-auto" style="max-width: 800px; color: var(--text-color);">
-                    <form id="search-form" class="row g-3" action="recherche.html" method="GET">
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" name="departure_city" placeholder="Ville de départ"
+                <div class="search-bar-inline mx-auto" style="max-width: 900px;">
+                    <form id="search-form" class="row g-0 align-items-center" action="recherche.html" method="GET">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" name="departure_city" placeholder="Départ" required>
+                        </div>
+                        <div class="col-md-auto d-none d-md-block">
+                            <div class="divider h-100"></div>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" name="destination_city" placeholder="Arrivée"
                                 required>
                         </div>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" name="destination_city"
-                                placeholder="Ville d'arrivée" required>
+                        <div class="col-md-auto d-none d-md-block">
+                            <div class="divider h-100"></div>
                         </div>
                         <div class="col-md-3">
                             <input type="date" class="form-control" name="departure_date">
                         </div>
-                        <div class="col-md-1">
-                            <button type="submit" class="btn btn-eco w-100">🔍</button>
+                        <div class="col-md-auto d-none d-md-block">
+                            <div class="divider h-100"></div>
+                        </div>
+                        <div class="col-md-2 p-1">
+                            <button type="submit" class="btn btn-eco-accent w-100 h-100 rounded-pill fs-5"
+                                style="min-height: 50px;">Rechercher</button>
                         </div>
                     </form>
                 </div>
             </div>
         </section>
 
-        <section class="container my-5">
-            <h2 class="text-center mb-4">Pourquoi choisir EcoRide ?</h2>
-            <div class="row">
-                <div class="col-md-4 text-center">
-                    <div class="p-3">
-                        <h3>Écologique</h3>
-                        <p>Privilégiez les véhicules électriques (marqués <span class="eco-badge">Feuille</span>) et
-                            réduisez les émissions.</p>
+        <section class="container my-5 py-5">
+            <div class="row g-5">
+                <div class="col-md-4">
+                    <div class="p-4 bg-white rounded-4 shadow-sm h-100 border border-light">
+                        <h4 class="fw-bold mb-3 text-primary" style="color: var(--eco-primary) !important;">100%
+                            Écologique</h4>
+                        <p class="text-muted">Nous mettons en avant les véhicules électriques (<span
+                                class="eco-badge">EV</span>) pour réduire notre empreinte carbone commune.</p>
                     </div>
                 </div>
-                <div class="col-md-4 text-center">
-                    <div class="p-3">
-                        <h3>Économique</h3>
-                        <p>Partagez les frais et accumulez des crédits plateforme (20 offerts à l'inscription).</p>
+                <div class="col-md-4">
+                    <div class="p-4 bg-white rounded-4 shadow-sm h-100 border border-light">
+                        <h4 class="fw-bold mb-3 text-primary" style="color: var(--eco-primary) !important;">Économies
+                            partagées</h4>
+                        <p class="text-muted">Économisez sur vos trajets tout en accumulant des crédits sur la
+                            plateforme. 20 crédits offerts à l'inscription !</p>
                     </div>
                 </div>
-                <div class="col-md-4 text-center">
-                    <div class="p-3">
-                        <h3>Convivial</h3>
-                        <p>Rencontrez des personnes partageant vos valeurs.</p>
+                <div class="col-md-4">
+                    <div class="p-4 bg-white rounded-4 shadow-sm h-100 border border-light">
+                        <h4 class="fw-bold mb-3 text-primary" style="color: var(--eco-primary) !important;">Confiance &
+                            Sécurité</h4>
+                        <p class="text-muted">Une communauté vérifiée, des avis modérés et un système de paiement par
+                            crédits totalement sécurisé.</p>
                     </div>
                 </div>
             </div>

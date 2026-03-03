@@ -16,19 +16,29 @@
     <main class="container my-5 flex-grow-1">
         <div class="row">
             <div class="col-md-3">
-                <div class="card p-3 mb-4 shadow-sm text-center">
-                    <h4 class="fw-bold" id="user-pseudo">...</h4>
-                    <p class="text-muted mb-1" id="user-role">...</p>
-                    <hr>
-                    <h2 class="text-success mb-0" id="user-credits">...</h2>
-                    <p class="small text-muted">Crédits disponibles</p>
+                <div class="card p-4 mb-4 shadow-sm text-center border-0 rounded-4"
+                    style="background-color: var(--eco-surface);">
+                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mx-auto mb-3 fs-2 fw-bold"
+                        style="width: 80px; height: 80px;" id="user-avatar-initial">
+                        ?
+                    </div>
+                    <h4 class="fw-bold fs-4" id="user-pseudo">...</h4>
+                    <p class="text-muted mb-3" id="user-role">...</p>
+                    <div class="p-3 rounded-4" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;">
+                        <h2 class="text-success mb-0 fw-bold" id="user-credits">...</h2>
+                        <p class="small text-muted mb-0 fw-bold">Crédits disponibles</p>
+                    </div>
                 </div>
 
-                <div class="list-group shadow-sm">
-                    <button class="list-group-item list-group-item-action active fw-bold" data-bs-toggle="list"
-                        data-bs-target="#vehicules" type="button">Mes Véhicules</button>
-                    <button class="list-group-item list-group-item-action fw-bold" data-bs-toggle="list"
-                        data-bs-target="#publier" type="button">Publier un trajet</button>
+                <div class="list-group shadow-sm rounded-4 border-0">
+                    <button class="list-group-item list-group-item-action active fw-bold border-0 py-3"
+                        data-bs-toggle="list" data-bs-target="#vehicules" type="button"
+                        style="border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;">🚗 Mes
+                        Véhicules</button>
+                    <button class="list-group-item list-group-item-action fw-bold border-0 py-3" data-bs-toggle="list"
+                        data-bs-target="#publier" type="button"
+                        style="border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);">➕ Publier un
+                        trajet</button>
                     <!-- Admin Dashboard Link injected here if role=admin/employe -->
                     <div id="admin-links"></div>
                 </div>
@@ -38,32 +48,39 @@
                 <div class="tab-content" id="nav-tabContent">
                     <!-- Véhicules Tab -->
                     <div class="tab-pane fade show active" id="vehicules">
-                        <div class="card p-4 shadow-sm">
-                            <h3 class="fw-bold mb-4">Mes Véhicules</h3>
-                            <div id="vehicles-list" class="row mb-4">
+                        <div class="card p-5 shadow-sm border-0 rounded-4">
+                            <h3 class="fw-bold mb-4" style="color: var(--eco-primary);">Mes Véhicules</h3>
+                            <div id="vehicles-list" class="row mb-5 g-4">
                                 <!-- Loaded via JS -->
                             </div>
 
-                            <hr>
-                            <h5 class="fw-bold mt-4">Ajouter un véhicule</h5>
-                            <form id="add-vehicle-form" class="row g-3">
+                            <hr style="opacity: 0.1;">
+
+                            <h5 class="fw-bold mt-4 mb-3">Ajouter un véhicule</h5>
+                            <form id="add-vehicle-form" class="row g-3 bg-light p-4 rounded-4 border-0">
                                 <div class="col-md-4">
-                                    <input type="text" class="form-control" id="v-immat" placeholder="Immatriculation"
-                                        required>
-                                </div>
-                                <div class="col-md-4">
-                                    <input type="text" class="form-control" id="v-model" placeholder="Modèle" required>
+                                    <input type="text" class="form-control form-control-lg bg-white border-0"
+                                        id="v-immat" placeholder="Immatriculation" required>
                                 </div>
                                 <div class="col-md-4">
-                                    <input type="text" class="form-control" id="v-color" placeholder="Couleur" required>
+                                    <input type="text" class="form-control form-control-lg bg-white border-0"
+                                        id="v-model" placeholder="Modèle" required>
                                 </div>
-                                <div class="col-12 form-check ms-3">
-                                    <input class="form-check-input" type="checkbox" id="v-eco">
-                                    <label class="form-check-label text-success fw-bold" for="v-eco">Véhicule Électrique
-                                        (Covoiturage Écologique)</label>
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control form-control-lg bg-white border-0"
+                                        id="v-color" placeholder="Couleur" required>
                                 </div>
-                                <div class="col-12 text-end">
-                                    <button type="submit" class="btn btn-eco px-4">Ajouter</button>
+                                <div class="col-12 mt-3 d-flex align-items-center">
+                                    <div class="form-check me-auto">
+                                        <input class="form-check-input fs-5" type="checkbox" id="v-eco"
+                                            style="cursor: pointer;">
+                                        <label class="form-check-label text-success fw-bold ms-2 pt-1" for="v-eco"
+                                            style="cursor: pointer;">
+                                            Véhicule Électrique (Covoiturage Écologique)
+                                        </label>
+                                    </div>
+                                    <button type="submit"
+                                        class="btn btn-eco-accent rounded-pill px-5 py-2">Ajouter</button>
                                 </div>
                             </form>
                         </div>
@@ -71,51 +88,68 @@
 
                     <!-- Publier Tab -->
                     <div class="tab-pane fade" id="publier">
-                        <div class="card p-4 shadow-sm border-top border-5 border-success">
-                            <h3 class="fw-bold mb-4 text-success">Publier un trajet</h3>
-                            <p class="text-muted small"><strong>Attention :</strong> 2 crédits seront déduits de votre
+                        <div class="card p-5 shadow-sm border-0 rounded-4">
+                            <h3 class="fw-bold mb-2 text-success">Publier un trajet</h3>
+                            <p class="text-muted mb-4 pb-3 border-bottom"><strong>Attention :</strong> 2 crédits seront
+                                déduits de votre
                                 compte lors de la publication.</p>
-                            <form id="publish-trip-form" class="row g-3">
+
+                            <form id="publish-trip-form" class="row g-4 bg-light p-4 rounded-4">
                                 <div class="col-md-6">
-                                    <label class="form-label">Véhicule</label>
-                                    <select class="form-select" id="t-vehicule" required>
+                                    <label class="form-label fw-bold text-muted small text-uppercase">Véhicule
+                                        Utilisé</label>
+                                    <select class="form-select form-select-lg border-0 bg-white" id="t-vehicule"
+                                        required>
                                         <option value="">Sélectionner un véhicule</option>
                                     </select>
                                 </div>
-                                <div class="col-12 mt-4">
-                                    <hr>
+                                <div class="col-md-6"></div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-muted small text-uppercase">Ville de
+                                        départ</label>
+                                    <input type="text" class="form-control form-control-lg border-0 bg-white"
+                                        id="t-depart" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Ville de départ</label>
-                                    <input type="text" class="form-control" id="t-depart" required>
+                                    <label class="form-label fw-bold text-muted small text-uppercase">Ville
+                                        d'arrivée</label>
+                                    <input type="text" class="form-control form-control-lg border-0 bg-white"
+                                        id="t-arrivee" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Ville d'arrivée</label>
-                                    <input type="text" class="form-control" id="t-arrivee" required>
+                                    <label class="form-label fw-bold text-muted small text-uppercase">Date du
+                                        trajet</label>
+                                    <input type="date" class="form-control form-control-lg border-0 bg-white"
+                                        id="t-date" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Date</label>
-                                    <input type="date" class="form-control" id="t-date" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Heure</label>
-                                    <input type="time" class="form-control" id="t-heure" required>
+                                    <label class="form-label fw-bold text-muted small text-uppercase">Heure de
+                                        départ</label>
+                                    <input type="time" class="form-control form-control-lg border-0 bg-white"
+                                        id="t-heure" required>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label">Prix (Crédits)</label>
-                                    <input type="number" class="form-control" id="t-prix" min="1" required>
+                                    <label class="form-label fw-bold text-muted small text-uppercase">Prix
+                                        (Crédits)</label>
+                                    <input type="number" class="form-control form-control-lg border-0 bg-white"
+                                        id="t-prix" min="1" required>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label">Durée Max (Minutes)</label>
-                                    <input type="number" class="form-control" id="t-duree" min="10" required>
+                                    <label class="form-label fw-bold text-muted small text-uppercase">Durée
+                                        (Minutes)</label>
+                                    <input type="number" class="form-control form-control-lg border-0 bg-white"
+                                        id="t-duree" min="10" required>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label">Places</label>
-                                    <input type="number" class="form-control" id="t-places" min="1" required>
+                                    <label class="form-label fw-bold text-muted small text-uppercase">Places
+                                        Dispo.</label>
+                                    <input type="number" class="form-control form-control-lg border-0 bg-white"
+                                        id="t-places" min="1" required>
                                 </div>
-                                <div class="col-12 text-end mt-4">
-                                    <button type="submit" class="btn btn-eco btn-lg px-5 shadow-sm fw-bold">Publier (-2
-                                        Crédits)</button>
+                                <div class="col-12 text-end mt-5">
+                                    <button type="submit"
+                                        class="btn btn-eco btn-lg px-5 rounded-pill shadow-sm fw-bold">🚀 Publier mon
+                                        trajet (-2 Crédits)</button>
                                 </div>
                             </form>
                         </div>

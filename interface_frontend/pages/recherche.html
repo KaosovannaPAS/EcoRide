@@ -98,19 +98,37 @@
             let html = trips.map(t => {
                 let ecoBadge = t.is_electric == 1 ? '<span class="eco-badge ms-2">🍃 Écologique</span>' : '';
                 return `
-                    <div class="card mb-3 p-4">
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <h4 class="fw-bold">${t.departure_city} ➔ ${t.destination_city} ${ecoBadge}</h4>
-                                <p class="mb-2 text-muted"><strong class="text-dark">Date:</strong> ${t.departure_date} à ${t.departure_time} - <strong class="text-dark">Durée:</strong> ${t.max_duration} min</p>
-                                <p class="mb-0"><strong>Chauffeur:</strong> ${t.driver_pseudo}</p>
-                            </div>
-                            <div class="col-md-4 text-md-end mt-3 mt-md-0 d-flex flex-column justify-content-center align-items-md-end">
-                                <h3 class="text-success fw-bold">${t.price} <small class="text-muted fs-6">crédits</small></h3>
-                                <a href="detail.html?id=${t.id}" class="btn btn-outline-success mt-2">Détails et Réservation</a>
+                    <a href="detail.html?id=${t.id}" class="text-decoration-none text-dark">
+                        <div class="card mb-4 p-4 border-0 shadow-sm rounded-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-9">
+                                    <h4 class="fw-bold mb-3">${t.departure_date}</h4>
+                                    <div class="d-flex align-items-stretch mb-2">
+                                        <div class="d-flex flex-column align-items-center justify-content-between me-3">
+                                            <div class="fw-bold text-primary">${t.departure_time}</div>
+                                            <div class="vr my-1 border-2 text-muted" style="height: 30px; opacity: 0.3;"></div>
+                                            <div class="fw-bold text-primary">Durée:<br>${t.max_duration} min</div>
+                                        </div>
+                                        <div class="d-flex flex-column justify-content-between">
+                                            <div class="fs-5 fw-bold">${t.departure_city}</div>
+                                            <div class="fs-5 fw-bold mt-auto">${t.destination_city}</div>
+                                        </div>
+                                    </div>
+                                    ${ecoBadge}
+                                    <div class="mt-4 pt-3 border-top d-flex align-items-center">
+                                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                            ${t.driver_pseudo.charAt(0).toUpperCase()}
+                                        </div>
+                                        <span class="fw-bold text-muted">${t.driver_pseudo}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-md-end mt-3 mt-md-0 d-flex flex-column justify-content-between h-100">
+                                    <h3 class="text-dark fw-bold mb-0">${t.price} <small class="text-muted fs-6 fw-normal">crédits</small></h3>
+                                    <div class="mt-auto text-success fw-bold small mt-3">Sélect.</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 `;
             }).join('');
             container.innerHTML = html;
