@@ -82,16 +82,21 @@ main {
 
 /* Hero Section */
 .hero-section {
-    background-color: var(--eco-surface);
-    color: var(--eco-text);
-    padding: 80px 0;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('../images/hero_background_1772536897278.png');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 120px 0;
     text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 
 .hero-section h1 {
-    color: var(--eco-primary);
+    color: white;
     font-size: 3.5rem;
     letter-spacing: -1px;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* Cards */
