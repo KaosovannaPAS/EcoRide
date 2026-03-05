@@ -1,6 +1,6 @@
 // interface_frontend/ressources/js/api.js
 
-const API_BASE_URL = '../../noyau_backend/api/v1';
+const API_BASE_URL = '../../../api';
 
 async function apiCall(endpoint, method = 'GET', body = null) {
     const headers = {
