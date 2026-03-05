@@ -16,7 +16,13 @@ try {
     echo "Existing tables: " . implode(", ", $tables) . "\n";
 
     // 2. Create tables if missing
-    echo "Initializing schema...\n";
+    echo "Cleining up old schema...\n";
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
+    $pdo->exec("DROP TABLE IF EXISTS trips, vehicles, users, reservations, incidents, dishes, menus, order_items");
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
+    echo "Old tables dropped.\n";
+
+    echo "Initializing new schema...\n";
 
     $queries = [
         "CREATE TABLE IF NOT EXISTS users (
