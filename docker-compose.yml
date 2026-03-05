@@ -7,6 +7,12 @@ services:
       - "8000:80"
     volumes:
       - .:/var/www/html
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_DATABASE=ecoride
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+      - MONGO_HOST=mongo
     depends_on:
       - db
       - mongo
@@ -20,7 +26,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
       - ./noyau_backend/configuration/schema.sql:/docker-entrypoint-initdb.d/schema.sql

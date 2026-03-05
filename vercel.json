@@ -1,0 +1,23 @@
+{
+    "functions": {
+        "noyau_backend/api/v1/*.php": {
+            "runtime": "vercel-php@0.7.1"
+        },
+        "*.php": {
+            "runtime": "vercel-php@0.7.1"
+        }
+    },
+    "routes": [
+        {
+            "src": "/check-vercel-config",
+            "dest": "/test.php"
+        },
+        {
+            "handle": "filesystem"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/$1"
+        }
+    ]
+}
