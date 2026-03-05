@@ -91,12 +91,27 @@ try {
         // Insert some trips
         $tomorrow = date('Y-m-d', strtotime('+1 day'));
         $dayAfter = date('Y-m-d', strtotime('+2 days'));
+        $nextWeek = date('Y-m-d', strtotime('+7 days'));
 
-        $pdo->exec("INSERT INTO trips (driver_id, vehicle_id, departure_city, destination_city, departure_date, departure_time, price, max_duration, max_seats, status, is_eco) 
-                   VALUES ($driver_id, $vehicle_id, 'Paris', 'Lyon', '$tomorrow', '08:00:00', 15, 240, 3, 'planned', 1)");
+        $tripsData = [
+            // Bon plans (price <= 20)
+            ['Paris', 'Lyon', $tomorrow, '08:00:00', 15, 240, 3, 1],
+            ['Marseille', 'Nice', $dayAfter, '14:30:00', 10, 120, 2, 1],
+            ['Bordeaux', 'Toulouse', $tomorrow, '09:15:00', 12, 150, 4, 1],
+            ['Nantes', 'Rennes', $nextWeek, '18:00:00', 8, 90, 3, 0],
+            ['Lille', 'Paris', $dayAfter, '07:30:00', 18, 180, 2, 1],
+            ['Strasbourg', 'Metz', $tomorrow, '16:45:00', 14, 100, 3, 0],
+            // Regular trips (price > 20)
+            ['Paris', 'Marseille', $nextWeek, '06:00:00', 45, 480, 3, 1],
+            ['Lyon', 'Montpellier', $dayAfter, '10:00:00', 25, 180, 2, 0],
+            ['Toulouse', 'Bordeaux', $nextWeek, '11:30:00', 22, 150, 4, 1],
+            ['Nice', 'Cannes', $tomorrow, '20:00:00', 5, 45, 4, 1] // Super bon plan
+        ];
 
-        $pdo->exec("INSERT INTO trips (driver_id, vehicle_id, departure_city, destination_city, departure_date, departure_time, price, max_duration, max_seats, status, is_eco) 
-                   VALUES ($driver_id, $vehicle_id, 'Marseille', 'Nice', '$dayAfter', '14:30:00', 10, 120, 2, 'planned', 1)");
+        foreach ($tripsData as $t) {
+            $stmt = $pdo->prepare("INSERT INTO trips (driver_id, vehicle_id, departure_city, destination_city, departure_date, departure_time, price, max_duration, max_seats, status, is_eco) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'planned', ?)");
+            $stmt->execute([$driver_id, $vehicle_id, $t[0], $t[1], $t[2], $t[3], $t[4], $t[5], $t[6], $t[7]]);
+        }
 
         echo "Data seeded successfully.\n";
     }
