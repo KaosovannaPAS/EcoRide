@@ -1,6 +1,9 @@
 <?php
 // api/remote_setup.php
 header('Content-Type: text/plain');
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
 
 require_once __DIR__ . '/../noyau_backend/configuration/db.php';
 
@@ -12,48 +15,48 @@ try {
     $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
     echo "Existing tables: " . implode(", ", $tables) . "\n";
 
-    // 2. Create tables if missing (Simplification of schema.sql)
+    // 2. Create tables if missing
     echo "Initializing schema...\n";
 
     $queries = [
         "CREATE TABLE IF NOT EXISTS users (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            last_name VARCHAR(50) NOT NULL,
-            first_name VARCHAR(50) NOT NULL,
-            email VARCHAR(100) UNIQUE NOT NULL,
-            password VARCHAR(255) NOT NULL,
-            pseudo VARCHAR(50) UNIQUE NOT NULL,
-            phone VARCHAR(20),
-            address TEXT,
-            birth_date DATE,
-            role ENUM('admin', 'driver', 'passenger') DEFAULT 'passenger',
+            pseudo VARCHAR(50) NOT NULL UNIQUE,
+            email VARCHAR(100) NOT NULL UNIQUE,
+            password_hash VARCHAR(255) NOT NULL,
+            role ENUM('passager', 'chauffeur', 'employe', 'admin', 'suspended') DEFAULT 'passager',
             credits INT DEFAULT 20,
-            profile_picture VARCHAR(255)
+            photo VARCHAR(255) DEFAULT NULL,
+            bio TEXT DEFAULT NULL,
+            pref_smoking BOOLEAN DEFAULT FALSE,
+            pref_animals BOOLEAN DEFAULT FALSE,
+            pref_music BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )",
         "CREATE TABLE IF NOT EXISTS vehicles (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            brand VARCHAR(50) NOT NULL,
-            model VARCHAR(50) NOT NULL,
-            color VARCHAR(30),
-            registration_number VARCHAR(20) UNIQUE NOT NULL,
-            first_registration_date DATE,
-            nb_seats INT NOT NULL,
+            user_id INT NOT NULL,
+            registration VARCHAR(20) NOT NULL UNIQUE,
+            model VARCHAR(100) NOT NULL,
+            color VARCHAR(30) NOT NULL,
             is_electric BOOLEAN DEFAULT FALSE,
-            driver_id INT,
-            FOREIGN KEY (driver_id) REFERENCES users(id) ON DELETE CASCADE
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         )",
         "CREATE TABLE IF NOT EXISTS trips (
             id INT AUTO_INCREMENT PRIMARY KEY,
+            driver_id INT NOT NULL,
+            vehicle_id INT NOT NULL,
             departure_city VARCHAR(100) NOT NULL,
             destination_city VARCHAR(100) NOT NULL,
             departure_date DATE NOT NULL,
             departure_time TIME NOT NULL,
-            price DECIMAL(10, 2) NOT NULL,
-            seats_available INT NOT NULL,
-            status ENUM('planned', 'completed', 'cancelled') DEFAULT 'planned',
-            driver_id INT,
-            vehicle_id INT,
+            price INT NOT NULL,
+            max_duration INT NOT NULL,
+            max_seats INT NOT NULL,
+            status ENUM('planned', 'started', 'finished', 'cancelled') DEFAULT 'planned',
             is_eco BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (driver_id) REFERENCES users(id) ON DELETE CASCADE,
             FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
         )"
@@ -61,7 +64,7 @@ try {
 
     foreach ($queries as $q) {
         $pdo->exec($q);
-        echo "Query executed successfully.\n";
+        echo "Successfully checked/created table.\n";
     }
 
     // 3. Seed some data if users table is empty
@@ -70,24 +73,24 @@ try {
         echo "Seeding initial data...\n";
 
         // Insert a driver
-        $pdo->exec("INSERT INTO users (last_name, first_name, email, password, pseudo, role, credits) 
-                   VALUES ('Eco', 'Driver', 'driver@ecoride.fr', '" . password_hash('password123', PASSWORD_DEFAULT) . "', 'EcoDriver', 'driver', 100)");
+        $pdo->exec("INSERT INTO users (pseudo, email, password_hash, role, credits) 
+                   VALUES ('EcoDriver', 'driver@ecoride.fr', '" . password_hash('password123', PASSWORD_DEFAULT) . "', 'chauffeur', 100)");
         $driver_id = $pdo->lastInsertId();
 
         // Insert a vehicle
-        $pdo->exec("INSERT INTO vehicles (brand, model, color, registration_number, nb_seats, is_electric, driver_id) 
-                   VALUES ('Tesla', 'Model 3', 'Blanc', 'ECO-2024-FR', 4, 1, $driver_id)");
+        $pdo->exec("INSERT INTO vehicles (user_id, registration, model, color, is_electric) 
+                   VALUES ($driver_id, 'ECO-2024-FR', 'Tesla Model 3', 'Blanc', 1)");
         $vehicle_id = $pdo->lastInsertId();
 
         // Insert some trips
-        $today = date('Y-m-d');
         $tomorrow = date('Y-m-d', strtotime('+1 day'));
+        $dayAfter = date('Y-m-d', strtotime('+2 days'));
 
-        $pdo->exec("INSERT INTO trips (departure_city, destination_city, departure_date, departure_time, price, seats_available, driver_id, vehicle_id, is_eco) 
-                   VALUES ('Paris', 'Lyon', '$tomorrow', '08:00:00', 15.00, 3, $driver_id, $vehicle_id, 1)");
+        $pdo->exec("INSERT INTO trips (driver_id, vehicle_id, departure_city, destination_city, departure_date, departure_time, price, max_duration, max_seats, status, is_eco) 
+                   VALUES ($driver_id, $vehicle_id, 'Paris', 'Lyon', '$tomorrow', '08:00:00', 15, 240, 3, 'planned', 1)");
 
-        $pdo->exec("INSERT INTO trips (departure_city, destination_city, departure_date, departure_time, price, seats_available, driver_id, vehicle_id, is_eco) 
-                   VALUES ('Marseille', 'Nice', '$tomorrow', '14:30:00', 10.00, 2, $driver_id, $vehicle_id, 1)");
+        $pdo->exec("INSERT INTO trips (driver_id, vehicle_id, departure_city, destination_city, departure_date, departure_time, price, max_duration, max_seats, status, is_eco) 
+                   VALUES ($driver_id, $vehicle_id, 'Marseille', 'Nice', '$dayAfter', '14:30:00', 10, 120, 2, 'planned', 1)");
 
         echo "Data seeded successfully.\n";
     }
