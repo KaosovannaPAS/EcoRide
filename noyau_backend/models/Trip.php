@@ -94,7 +94,7 @@ class Trip
         $query = "
             SELECT t.id, t.departure_city, t.destination_city, t.departure_date, t.departure_time, 
                    t.price, t.max_duration, t.max_seats, t.status, 
-                   u.pseudo as driver_pseudo, v.model as vehicle_model, v.is_electric
+                   u.pseudo as driver_pseudo, u.photo as driver_photo, v.model as vehicle_model, v.is_electric
             FROM " . $this->table_name . " t
             JOIN users u ON t.driver_id = u.id
             JOIN vehicles v ON t.vehicle_id = v.id

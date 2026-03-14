@@ -163,38 +163,64 @@
                 const oldPrice = Math.round(t.price * 1.5);
                 const savings = oldPrice - t.price;
 
+                // Simulate a realistic rating based on driver id to keep it consistent
+                const simulatedRating = (4.5 + (t.driver_id % 5) / 10).toFixed(1);
+
+                // Driver Photo Logic (fallback to initial if generic.png or empty)
+                let driverPhotoHtml = '';
+                if (t.driver_photo && t.driver_photo !== 'generic.png' && t.driver_photo !== '') {
+                    driverPhotoHtml = `<img src="../../noyau_backend/uploads/${t.driver_photo}" alt="${t.driver_pseudo}" class="rounded-circle object-fit-cover me-2" style="width: 40px; height: 40px; border: 1px solid #eee;">`;
+                } else {
+                    const initial = t.driver_pseudo ? t.driver_pseudo.charAt(0).toUpperCase() : '?';
+                    driverPhotoHtml = `<div class="rounded-circle d-flex align-items-center justify-content-center me-2 text-white bg-eco fw-bold" style="width: 40px; height: 40px; font-size: 1.1rem; border: 1px solid #00cc66;">${initial}</div>`;
+                }
+
                 return `
                     <div class="col-lg-6 col-md-12">
-                        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white bon-plan-card position-relative" onclick="window.location.href='detail.html?id=${t.id}'" style="cursor:pointer;">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white bon-plan-card position-relative pb-0">
                             ${dealBadge}
                             ${isBonPlan ? `<div class="savings-badge">-${savings} Crédits !</div>` : ''}
-                            <div class="p-4 border-bottom" style="border-color: rgba(0,0,0,0.05) !important;">
+                            
+                            <div class="card-body p-4 d-flex flex-column" style="cursor:pointer;" onclick="window.location.href='detail.html?id=${t.id}'">
+                                <!-- En-tête : Conducteur & Note -->
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div class="fw-bold fs-5 text-dark">${t.departure_time}</div>
-                                    <div class="d-flex flex-column align-items-end">
-                                        <span class="price-slashed">${oldPrice}</span>
-                                        <div class="price-now">${t.price} <span class="fs-6 text-muted fw-normal">Crédits</span></div>
+                                    <div class="d-flex align-items-center">
+                                        ${driverPhotoHtml}
+                                        <div class="fw-bold text-dark fs-6">${t.driver_pseudo || 'Conducteur'}</div>
+                                    </div>
+                                    <div class="d-flex align-items-center text-warning fw-bold fs-6">
+                                        <span class="me-1">⭐</span> ${simulatedRating}
                                     </div>
                                 </div>
-                                <div class="position-relative ps-4" style="border-left: 2px dashed #00cc66; min-height: 60px;">
-                                    <div class="position-absolute rounded-circle" style="width: 12px; height: 12px; border: 3px solid #00cc66; background: white; left: -7px; top: 0;"></div>
-                                    <h5 class="fw-bold mb-4" style="color: var(--eco-primary);">${t.departure_city}</h5>
-                                    
-                                    <div class="position-absolute rounded-circle" style="width: 12px; height: 12px; border: 3px solid #00cc66; background: #00cc66; left: -7px; bottom: 0;"></div>
-                                    <h5 class="fw-bold mb-0" style="color: var(--eco-primary);">${t.destination_city}</h5>
+                                
+                                <!-- Détails Trajets -->
+                                <div class="mb-2">
+                                    <h5 class="fw-bold mb-1" style="color: var(--eco-primary); font-size: 1.1rem;">
+                                        ${t.departure_city} <span class="text-muted mx-1">&rarr;</span> ${t.destination_city}
+                                    </h5>
+                                    <div class="text-muted small fw-medium d-flex flex-wrap align-items-center">
+                                        <span>${new Date(t.departure_date).toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' })}. &bull; ${t.departure_time} - ${new Date(new Date('1970/01/01 ' + t.departure_time).getTime() + t.max_duration * 60000).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+                                        <span class="mx-1">&bull;</span>
+                                        <span>${Math.floor(t.max_duration / 60)}h${t.max_duration % 60 > 0 ? (t.max_duration % 60).toString().padStart(2, '0') : ''}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    ${ecoBadge ? `<div class="badge bg-light text-success border border-success rounded-pill px-2 py-1 small" style="font-weight:600;"><span class="me-1">🍃</span> Véhicule Électrique</div>` : `<div class="badge bg-light text-secondary border rounded-pill px-2 py-1 small"><span class="me-1">🚗</span> Thermique</div>`}
+                                </div>
+                                
+                                <!-- Prix -->
+                                <div class="text-center mt-auto py-2">
+                                    <span class="display-6 fw-bold text-success">${t.price} <span class="fs-5 text-muted fw-normal" style="color: #28a745 !important;">crédits</span></span>
+                                    ${isBonPlan ? `<span class="text-muted text-decoration-line-through fs-6 ms-2">${oldPrice}cr</span>` : ''}
                                 </div>
                             </div>
-                            <div class="p-4 bg-light d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center me-2 text-success fw-bold" style="width: 32px; height: 32px; font-size: 0.8rem;">
-                                        ${t.driver_pseudo ? t.driver_pseudo.charAt(0).toUpperCase() : '?'}
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold text-dark small">${t.driver_pseudo || 'Conducteur inconnu'}</div>
-                                        <div class="text-muted" style="font-size: 0.7rem;">${t.vehicle_model || 'Modèle inconnu'}</div>
-                                    </div>
-                                </div>
-                                ${ecoBadge}
+                            
+                            <!-- Bouton d'action -->
+                            <div class="px-3 pb-3">
+                                <button class="btn btn-eco w-100 rounded-3 py-2 fw-bold fs-5 shadow-sm" onclick="window.location.href='detail.html?id=${t.id}'">
+                                    Réserver ce trajet
+                                </button>
                             </div>
                         </div>
                     </div>`;
