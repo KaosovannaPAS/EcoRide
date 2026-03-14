@@ -71,6 +71,15 @@
 
                 let ecoBadge = t.is_electric == 1 ? '<span class="eco-badge">🍃 Écologique</span>' : '';
 
+                // Driver Photo Logic pour la page détail
+                let driverPhotoHtml = '';
+                if (t.driver_photo && t.driver_photo !== 'generic.png' && t.driver_photo !== '') {
+                    driverPhotoHtml = `<img src="../../noyau_backend/uploads/${t.driver_photo}" alt="${t.driver_pseudo}" class="rounded-circle object-fit-cover me-3 border border-2 border-success shadow-sm" style="width: 56px; height: 56px;">`;
+                } else {
+                    const initial = t.driver_pseudo ? t.driver_pseudo.charAt(0).toUpperCase() : '?';
+                    driverPhotoHtml = `<div class="rounded-circle d-flex align-items-center justify-content-center me-3 text-white bg-eco border border-2 border-success shadow-sm fw-bold" style="width: 56px; height: 56px; font-size: 1.5rem;">${initial}</div>`;
+                }
+
                 let html = `
                     <div class="card p-0 mx-auto rounded-4 border-0 shadow-sm overflow-hidden" style="max-width: 800px;">
                         <div style="height: 200px; background-image: url('../ressources/images/trip_detail_map_1772537269403.png'); background-size: cover; background-position: center; border-bottom: 1px solid rgba(0,0,0,0.05);"></div>
@@ -103,9 +112,7 @@
                                 <div class="p-4 bg-white rounded-4 border h-100" style="background-color: var(--eco-bg) !important;">
                                     <h5 class="fw-bold text-primary mb-4" style="color: var(--eco-primary) !important;">Le Chauffeur</h5>
                                     <div class="d-flex align-items-center mb-3">
-                                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3 fs-4" style="width: 48px; height: 48px;">
-                                            ${t.driver_pseudo.charAt(0).toUpperCase()}
-                                        </div>
+                                        ${driverPhotoHtml}
                                         <div>
                                             <div class="fw-bold fs-5">${t.driver_pseudo}</div>
                                             <div class="text-muted small">Membre vérifié</div>
