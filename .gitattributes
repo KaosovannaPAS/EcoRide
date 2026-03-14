@@ -1,0 +1,4 @@
+# Forcer GitHub Linguist à détecter les langages JS et Dockerfile
+# Normalement ignorés ou masqués s'ils sont trop petits
+*.js linguist-detectable=true
+Dockerfile linguist-detectable=true
