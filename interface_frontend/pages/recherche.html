@@ -135,6 +135,23 @@
             try {
                 let query = `action=search&departure_city=${departure}&destination_city=${destination}&departure_date=${date}`;
                 allTrips = await apiCall(`trips.php?${query}`);
+
+                // Auto-seeding pour Vercel : si tous les chauffeurs sont "EcoDriver", on injecte les faux profils depuis le front
+                if (allTrips.length > 0 && allTrips.every(t => t.driver_pseudo === 'EcoDriver')) {
+                    try {
+                        const seedRes = await fetch('../../api/seed_vercel.php');
+                        const seedData = await seedRes.json();
+                        if (seedData.status === 'error') {
+                            alert("Erreur base de données (seeding) :\n" + seedData.message + "\nDétails: " + JSON.stringify(seedData.logs));
+                        } else {
+                            // On recharge les trajets maintenant que la base est prête avec les photos !
+                            allTrips = await apiCall(`trips.php?${query}`);
+                        }
+                    } catch (e) {
+                        console.error("Auto-seed error", e);
+                    }
+                }
+
                 renderTrips(allTrips);
             } catch (error) {
                 document.getElementById('results-container').innerHTML = '<div class="alert alert-danger">Impossible de charger les trajets.</div>';

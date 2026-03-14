@@ -60,8 +60,11 @@ try {
     $updatedTrips = 0;
     foreach ($trips as $t) {
         $random_driver = $user_ids[array_rand($user_ids)];
+        // Add updated_at if needed, but here we just update driver_id
         $updU = $pdo->prepare("UPDATE trips SET driver_id = ? WHERE id = ?");
-        $updU->execute([$random_driver, $t['id']]);
+        if (!$updU->execute([$random_driver, $t['id']])) {
+            $logs[] = "Erreur UPDATE trip $t[id]";
+        }
         $updatedTrips++;
     }
 
@@ -74,6 +77,6 @@ catch (Exception $e) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    echo json_encode(['status' => 'error', 'message' => $e->getMessage(), 'logs' => $logs ?? []]);
+    echo json_encode(['status' => 'error', 'message' => $e->getMessage(), 'logs' => $logs ?? [], 'trace' => $e->getTraceAsString()]);
 }
 ?>
