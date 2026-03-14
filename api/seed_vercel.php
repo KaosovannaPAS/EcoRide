@@ -42,13 +42,13 @@ try {
         $uid = $check->fetchColumn();
 
         if ($uid) {
-            $pdo->prepare("UPDATE users SET pseudo=?, photo=?, role='chauffeur' WHERE id=?")
+            $pdo->prepare("UPDATE users SET pseudo=?, photo=?, role='conducteur' WHERE id=?")
                 ->execute([$u['pseudo'], $u['photo'], $uid]);
             $user_ids[] = $uid;
         }
         else {
             $sql = "INSERT INTO users (pseudo, email, password_hash, role, credits, photo, bio, pref_smoking, pref_animals, pref_music, created_at) 
-                    VALUES (?, ?, ?, 'chauffeur', 100, ?, '', 0, 0, 0, NOW())";
+                    VALUES (?, ?, ?, 'conducteur', 100, ?, '', 0, 0, 0, NOW())";
             $pdo->prepare($sql)->execute([$u['pseudo'], $u['email'], $password_hash, $u['photo']]);
             $user_ids[] = $pdo->lastInsertId();
         }
