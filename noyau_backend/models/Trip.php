@@ -92,7 +92,7 @@ class Trip
     {
         // Build base query
         $query = "
-            SELECT t.id, t.departure_city, t.destination_city, t.departure_date, t.departure_time, 
+            SELECT t.id, t.driver_id, t.departure_city, t.destination_city, t.departure_date, t.departure_time, 
                    t.price, t.max_duration, t.max_seats, t.status, 
                    u.pseudo as driver_pseudo, u.photo as driver_photo, v.model as vehicle_model, v.is_electric
             FROM " . $this->table_name . " t
