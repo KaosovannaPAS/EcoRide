@@ -1,0 +1,46 @@
+{
+    "folders": [
+        {
+            "name": "EcoRide - Root",
+            "path": "."
+        },
+        {
+            "name": "EcoRide - Design Assets",
+            "path": "design"
+        },
+        {
+            "name": "EcoRide - Frontend",
+            "path": "interface_frontend"
+        },
+        {
+            "name": "EcoRide - Backend (Noyau)",
+            "path": "noyau_backend"
+        }
+    ],
+    "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "php.suggest.basic": false,
+        "php.validate.enable": true,
+        "files.exclude": {
+            "**/.git": true,
+            "**/.DS_Store": true,
+            "**/node_modules": true,
+            "**/vendor": true
+        },
+        "emmet.includeLanguages": {
+            "php": "html"
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "bmewburn.vscode-php-intelephense",
+            "xdebug.php-debug",
+            "ms-vscode.live-server",
+            "esbenp.prettier-vscode",
+            "ms-azuretools.vscode-docker",
+            "formulahendry.mysql",
+            "mechatroner.rainbow-csv"
+        ]
+    }
+}
