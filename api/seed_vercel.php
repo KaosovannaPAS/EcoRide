@@ -36,7 +36,7 @@ try {
                 $logs[] = "Mis à jour : " . $u['pseudo'] . " (ID: " . $existingId . ")";
             }
             else {
-                $stmt = $pdo->prepare("INSERT INTO users (pseudo, email, password_hash, role, credits, photo) VALUES (?, ?, ?, 'conducteur', 100, ?)");
+                $stmt = $pdo->prepare("INSERT INTO users (pseudo, email, password_hash, role, credits, photo, created_at) VALUES (?, ?, ?, 'conducteur', 100, ?, NOW())");
                 $stmt->execute([$u['pseudo'], $u['email'], $password_hash, $u['photo']]);
                 $newId = $pdo->lastInsertId();
                 $user_ids[] = $newId;
