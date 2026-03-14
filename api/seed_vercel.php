@@ -1,84 +1,75 @@
 <?php
 // api/seed_vercel.php
-// Script temporaire pour injecter de faux utilisateurs + photos sur Vercel/TiDB
+// Script temporaire ROBUSTE pour injection TiDB Vercel
 header('Content-Type: application/json', true, 200);
-
 require_once __DIR__ . '/../noyau_backend/configuration/db.php';
 
 try {
     $pdo->beginTransaction();
+    $logs = ["Départ injection ciblée..."];
 
+    // 1. Définir nos conducteurs vedettes
     $users = [
         ['pseudo' => 'Sophie M.', 'email' => 'sophie@ecoride.com', 'photo' => 'sophie.png'],
         ['pseudo' => 'Thomas G.', 'email' => 'thomas@ecoride.com', 'photo' => 'thomas.png'],
         ['pseudo' => 'Marc D.', 'email' => 'marc@ecoride.com', 'photo' => 'marc.png'],
         ['pseudo' => 'Julie D.', 'email' => 'julie@ecoride.com', 'photo' => 'julie.png'],
-        ['pseudo' => 'Camille R.', 'email' => 'camille@ecoride.com', 'photo' => 'camille.png'],
-        ['pseudo' => 'Antoine G.', 'email' => 'antoine@ecoride.com', 'photo' => 'antoine.png']
+        ['pseudo' => 'Camille R.', 'email' => 'camille@ecoride.com', 'photo' => 'camille.png']
     ];
 
     $password_hash = password_hash('password123', PASSWORD_BCRYPT);
     $user_ids = [];
-    $logs = ["Démarrage du seeding Vercel..."];
 
+    // 2. Cibler spécifiquement l'ancien "EcoDriver" s'il existe pour le transformer
+    $stmtEco = $pdo->prepare("SELECT id FROM users WHERE pseudo = 'EcoDriver' OR email = 'chauffeur@ecoride.fr' LIMIT 1");
+    $stmtEco->execute();
+    $ecoId = $stmtEco->fetchColumn();
+
+    if ($ecoId) {
+        $pdo->prepare("UPDATE users SET pseudo='Marc D.', photo='marc.png' WHERE id=?")->execute([$ecoId]);
+        $user_ids[] = $ecoId;
+        $logs[] = "Ancien EcoDriver (ID:$ecoId) transformé en Marc D.";
+    }
+
+    // 3. Insérer les autres
     foreach ($users as $u) {
-        try {
-            // First check if email exists
-            $checkStmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
-            $checkStmt->execute([$u['email']]);
-            $existingId = $checkStmt->fetchColumn();
+        // Skip if we already used this pseudo in step 2 (simple logic)
+        if ($u['pseudo'] === 'Marc D.' && $ecoId)
+            continue;
 
-            if ($existingId) {
-                // Update photo/pseudo
-                $stmt = $pdo->prepare("UPDATE users SET photo = ?, pseudo = ?, role = 'conducteur' WHERE id = ?");
-                $stmt->execute([$u['photo'], $u['pseudo'], $existingId]);
-                $user_ids[] = $existingId;
-                $logs[] = "Mis à jour : " . $u['pseudo'] . " (ID: " . $existingId . ")";
-            }
-            else {
-                $stmt = $pdo->prepare("INSERT INTO users 
-                    (pseudo, email, password_hash, role, credits, photo, bio, pref_smoking, pref_animals, pref_music, created_at) 
-                    VALUES (?, ?, ?, 'conducteur', 100, ?, '', 0, 0, 0, NOW())");
-                $stmt->execute([$u['pseudo'], $u['email'], $password_hash, $u['photo']]);
-                $newId = $pdo->lastInsertId();
-                $user_ids[] = $newId;
-                $logs[] = "Inséré : " . $u['pseudo'] . " (ID: $newId)";
-            }
+        $check = $pdo->prepare("SELECT id FROM users WHERE email = ?");
+        $check->execute([$u['email']]);
+        $uid = $check->fetchColumn();
+
+        if ($uid) {
+            $pdo->prepare("UPDATE users SET pseudo=?, photo=?, role='chauffeur' WHERE id=?")
+                ->execute([$u['pseudo'], $u['photo'], $uid]);
+            $user_ids[] = $uid;
         }
-        catch (Exception $e) {
-            $logs[] = "Erreur sur " . $u['pseudo'] . " : " . $e->getMessage();
+        else {
+            $sql = "INSERT INTO users (pseudo, email, password_hash, role, credits, photo, bio, pref_smoking, pref_animals, pref_music, created_at) 
+                    VALUES (?, ?, ?, 'chauffeur', 100, ?, '', 0, 0, 0, NOW())";
+            $pdo->prepare($sql)->execute([$u['pseudo'], $u['email'], $password_hash, $u['photo']]);
+            $user_ids[] = $pdo->lastInsertId();
         }
     }
 
-    if (empty($user_ids)) {
-        throw new Exception("Aucun ID utilisateur valide récupéré.");
+    // 4. Réassigner TOUS les trajets aux IDs trouvés
+    $trips = $pdo->query("SELECT id FROM trips")->fetchAll(PDO::FETCH_COLUMN);
+    $count = 0;
+    foreach ($trips as $tid) {
+        $rid = $user_ids[array_rand($user_ids)];
+        $pdo->prepare("UPDATE trips SET driver_id = ? WHERE id = ?")->execute([$rid, $tid]);
+        $count++;
     }
 
-    // Associer aléatoirement ces IDs aux trajets existants
-    $stmt = $pdo->prepare("SELECT id FROM trips");
-    $stmt->execute();
-    $trips = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    $updatedTrips = 0;
-    foreach ($trips as $t) {
-        $random_driver = $user_ids[array_rand($user_ids)];
-        // Add updated_at if needed, but here we just update driver_id
-        $updU = $pdo->prepare("UPDATE trips SET driver_id = ? WHERE id = ?");
-        if (!$updU->execute([$random_driver, $t['id']])) {
-            $logs[] = "Erreur UPDATE trip $t[id]";
-        }
-        $updatedTrips++;
-    }
-
-    $logs[] = "Seeding terminé. $updatedTrips trajets assignés aléatoirement.";
     $pdo->commit();
-    echo json_encode(['status' => 'success', 'logs' => $logs]);
+    echo json_encode(['status' => 'success', 'logs' => $logs, 'updated_trips' => $count]);
 
 }
 catch (Exception $e) {
-    if ($pdo->inTransaction()) {
+    if ($pdo->inTransaction())
         $pdo->rollBack();
-    }
-    echo json_encode(['status' => 'error', 'message' => $e->getMessage(), 'logs' => $logs ?? [], 'trace' => $e->getTraceAsString()]);
+    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }
 ?>

@@ -74,7 +74,7 @@
                 // Driver Photo Logic pour la page détail
                 let driverPhotoHtml = '';
                 if (t.driver_photo && t.driver_photo !== 'generic.png' && t.driver_photo !== '') {
-                    driverPhotoHtml = `<img src="../../noyau_backend/uploads/${t.driver_photo}" alt="${t.driver_pseudo}" class="rounded-circle object-fit-cover me-3 border border-2 border-success shadow-sm" style="width: 56px; height: 56px;">`;
+                    driverPhotoHtml = `<img src="../ressources/images/${t.driver_photo}" alt="${t.driver_pseudo}" class="rounded-circle object-fit-cover me-3 border border-2 border-success shadow-sm" style="width: 56px; height: 56px;">`;
                 } else {
                     const initial = t.driver_pseudo ? t.driver_pseudo.charAt(0).toUpperCase() : '?';
                     driverPhotoHtml = `<div class="rounded-circle d-flex align-items-center justify-content-center me-3 text-white bg-eco border border-2 border-success shadow-sm fw-bold" style="width: 56px; height: 56px; font-size: 1.5rem;">${initial}</div>`;
