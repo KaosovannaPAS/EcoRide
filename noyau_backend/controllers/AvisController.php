@@ -35,11 +35,11 @@ class AvisController
 
     public function moderate($data)
     {
-        if (empty($data->review_id) || empty($data->status)) {
+        if (empty($data->avis_id) || empty($data->statut)) {
             return ["status" => 400, "message" => "Données incomplètes."];
         }
 
-        if ($this->avis->updateStatus($data->review_id, $data->status)) {
+        if ($this->avis->updateStatus($data->avis_id, $data->statut)) {
             return ["status" => 200, "message" => "Avis mis à jour."];
         }
         else {

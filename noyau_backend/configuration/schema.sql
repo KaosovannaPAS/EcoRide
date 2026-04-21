@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS avis (
     cible_id INT NOT NULL,
     note TINYINT NOT NULL,
     commentaire TEXT DEFAULT NULL,
-    statut ENUM('en_attente', 'approuve', 'rejete') DEFAULT 'approuve',
+    statut ENUM('en_attente', 'approuve', 'rejete') DEFAULT 'en_attente',
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (trajet_id) REFERENCES trajets(id) ON DELETE CASCADE,
     FOREIGN KEY (auteur_id) REFERENCES utilisateurs(id) ON DELETE CASCADE,

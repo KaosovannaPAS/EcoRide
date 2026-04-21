@@ -13,31 +13,31 @@ try {
 
     $reviews = [
         [
-            'trip_id' => '65e0f1a2b3c4d5e6f7g8h9i0',
-            'reviewer_id' => 'user_123',
-            'reviewee_id' => 'driver_456',
-            'rating' => 5,
-            'comment' => "Super voyage, chauffeur très prudent et ponctuel !",
-            'status' => 'approved',
-            'created_at' => new MongoDB\BSON\UTCDateTime(strtotime("-2 days") * 1000)
+            'trajet_id' => '65e0f1a2b3c4d5e6f7g8h9i0',
+            'auteur_id' => 'user_123',
+            'cible_id' => 'driver_456',
+            'note' => 5,
+            'commentaire' => "Super voyage, chauffeur très prudent et ponctuel !",
+            'statut' => 'approuve',
+            'date_creation' => new MongoDB\BSON\UTCDateTime(strtotime("-2 days") * 1000)
         ],
         [
-            'trip_id' => '65e0f1a2b3c4d5e6f7g8h9i1',
-            'reviewer_id' => 'user_789',
-            'reviewee_id' => 'driver_456',
-            'rating' => 2,
-            'comment' => "Un peu de retard au départ, dommage.",
-            'status' => 'pending',
-            'created_at' => new MongoDB\BSON\UTCDateTime(strtotime("-1 day") * 1000)
+            'trajet_id' => '65e0f1a2b3c4d5e6f7g8h9i1',
+            'auteur_id' => 'user_789',
+            'cible_id' => 'driver_456',
+            'note' => 2,
+            'commentaire' => "Un peu de retard au départ, dommage.",
+            'statut' => 'en_attente',
+            'date_creation' => new MongoDB\BSON\UTCDateTime(strtotime("-1 day") * 1000)
         ],
         [
-            'trip_id' => '65e0f1a2b3c4d5e6f7g8h9i2',
-            'reviewer_id' => 'user_111',
-            'reviewee_id' => 'driver_222',
-            'rating' => 1,
-            'comment' => "Comportement inapproprié pendant le trajet.",
-            'status' => 'rejected',
-            'created_at' => new MongoDB\BSON\UTCDateTime()
+            'trajet_id' => '65e0f1a2b3c4d5e6f7g8h9i2',
+            'auteur_id' => 'user_111',
+            'cible_id' => 'driver_222',
+            'note' => 1,
+            'commentaire' => "Comportement inapproprié pendant le trajet.",
+            'statut' => 'rejete',
+            'date_creation' => new MongoDB\BSON\UTCDateTime()
         ]
     ];
 
@@ -45,7 +45,7 @@ try {
         $bulk->insert($review);
     }
 
-    $result = $manager->executeBulkWrite('ecoride.reviews', $bulk);
+    $result = $manager->executeBulkWrite('ecoride.avis', $bulk);
     echo json_encode(["status" => "success", "inserted" => $result->getInsertedCount()]);
 
 } catch (Exception $e) {

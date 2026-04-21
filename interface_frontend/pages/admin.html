@@ -971,7 +971,7 @@ async function loadReviews() {
 }
 async function moderate(id, status, btn) {
     btn.disabled = true; btn.textContent = '…';
-    await apiCall('admin.php?action=moderate_review','PUT',{review_id:id,status}).catch(e=>{toast(e.message,'error');return null;});
+    await apiCall('admin.php?action=moderate_review','PUT',{avis_id:id,statut:status}).catch(e=>{toast(e.message,'error');return null;});
     toast(`Avis ${status==='approuve'?'approuvé':'rejeté'}.`); loadReviews();
 }
 
@@ -982,7 +982,7 @@ async function loadIncidents() {
     let inc = await apiCall('admin.php?action=list_incidents').catch(()=>[]);
     inc = Array.isArray(inc) ? inc : [];
     const filter = document.getElementById('inc-filter')?.value||'';
-    if (filter) inc = inc.filter(i => i.status === filter);
+    if (filter) inc = inc.filter(i => i.statut === filter);
     if (!inc.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">✅</div><div class="empty-msg">Aucun incident trouvé.</div></div></td></tr>'; return; }
     tbody.innerHTML = inc.map(i => `<tr>
         <td><strong>${esc(i.ville_depart)} → ${esc(i.ville_destination)}</strong></td>
@@ -1005,10 +1005,10 @@ async function createEmployee(e) {
     const btn = document.getElementById('t-btn');
     btn.textContent='Création…'; btn.disabled=true;
     await apiCall('users.php?action=register','POST',{
-        pseudo:   document.getElementById('t-pseudo').value,
-        email:    document.getElementById('t-email').value,
-        password: document.getElementById('t-pwd').value,
-        role:     document.getElementById('t-role').value
+        pseudo:       document.getElementById('t-pseudo').value,
+        email:        document.getElementById('t-email').value,
+        mot_de_passe: document.getElementById('t-pwd').value,
+        role:         document.getElementById('t-role').value
     }).then(()=>{ toast('Compte créé !'); document.getElementById('form-team').reset(); })
       .catch(er=>toast(er.message,'error'));
     btn.textContent='➕ Créer le compte'; btn.disabled=false;
