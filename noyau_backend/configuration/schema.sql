@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS utilisateurs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     pseudo VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
-    mot_de_passe VARCHAR(255) NOT NULL,
+    mot_de_passe_hash VARCHAR(255) NOT NULL,
     role ENUM('passager', 'chauffeur', 'employe', 'admin', 'suspendu') DEFAULT 'passager',
     credits INT DEFAULT 20,
     photo VARCHAR(255) DEFAULT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS trajets (
     conducteur_id INT NOT NULL,
     vehicule_id INT NOT NULL,
     ville_depart VARCHAR(100) NOT NULL,
-    ville_destination VARCHAR(100) NOT NULL,
+    ville_arrivee VARCHAR(100) NOT NULL,
     date_depart DATE NOT NULL,
     heure_depart TIME NOT NULL,
     prix INT NOT NULL, -- Prix en crédits

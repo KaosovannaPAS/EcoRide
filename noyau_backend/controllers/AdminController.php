@@ -35,7 +35,7 @@ class AdminController
     {
         try {
             $stmt = $this->db->query("
-                SELECT i.*, t.ville_depart, t.ville_destination, u.pseudo as signaleur 
+                SELECT i.*, t.ville_depart, t.ville_arrivee, u.pseudo as signaleur 
                 FROM incidents i 
                 JOIN trajets t ON i.trajet_id = t.id 
                 JOIN utilisateurs u ON i.utilisateur_id = u.id 

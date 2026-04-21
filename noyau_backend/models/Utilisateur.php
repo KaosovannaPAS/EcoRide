@@ -9,7 +9,7 @@ class Utilisateur
     public $id;
     public $pseudo;
     public $email;
-    public $mot_de_passe; 
+    public $mot_de_passe_hash; 
     public $role;
     public $credits;
     public $photo;
@@ -26,18 +26,18 @@ class Utilisateur
     public function create()
     {
         $query = "INSERT INTO " . $this->table_name . " 
-                  SET pseudo=:pseudo, email=:email, mot_de_passe=:mot_de_passe, role=:role, credits=:credits";
+                  SET pseudo=:pseudo, email=:email, mot_de_passe_hash=:mot_de_passe_hash, role=:role, credits=:credits";
         $stmt = $this->conn->prepare($query);
 
         $this->pseudo = htmlspecialchars(strip_tags($this->pseudo));
         $this->email = htmlspecialchars(strip_tags($this->email));
-        $mot_de_passe_hash = password_hash($this->mot_de_passe, PASSWORD_BCRYPT);
+        $this->mot_de_passe_hash = password_hash($this->mot_de_passe_hash, PASSWORD_BCRYPT);
         $this->role = $this->role ?? 'passager';
         $this->credits = 20; // 20 credits offered on signup
 
         $stmt->bindParam(":pseudo", $this->pseudo);
         $stmt->bindParam(":email", $this->email);
-        $stmt->bindParam(":mot_de_passe", $mot_de_passe_hash);
+        $stmt->bindParam(":mot_de_passe_hash", $this->mot_de_passe_hash);
         $stmt->bindParam(":role", $this->role);
         $stmt->bindParam(":credits", $this->credits);
 
@@ -49,7 +49,7 @@ class Utilisateur
 
     public function login($email, $password)
     {
-        $query = "SELECT id, pseudo, mot_de_passe, role, credits, photo, biographie, pref_fumeur, pref_animaux, pref_musique 
+        $query = "SELECT id, pseudo, mot_de_passe_hash, role, credits, photo, biographie, pref_fumeur, pref_animaux, pref_musique 
                   FROM " . $this->table_name . " WHERE email = ? LIMIT 0,1";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $email);
@@ -61,7 +61,7 @@ class Utilisateur
             return false;
         }
 
-        if ($row && password_verify($password, $row['mot_de_passe'])) {
+        if ($row && password_verify($password, $row['mot_de_passe_hash'])) {
             $this->id = $row['id'];
             $this->pseudo = $row['pseudo'];
             $this->role = $row['role'];

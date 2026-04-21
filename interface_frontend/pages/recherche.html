@@ -151,13 +151,13 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         let departure = urlParams.get('ville_depart') || '';
-        let destination = urlParams.get('ville_destination') || '';
+        let destination = urlParams.get('ville_arrivee') || '';
         let date = urlParams.get('date_depart') || '';
         let allTrips = [];
 
         async function loadTrips() {
             try {
-                let query = `action=search&ville_depart=${departure}&ville_destination=${destination}&date_depart=${date}`;
+                let query = `action=search&ville_depart=${departure}&ville_arrivee=${destination}&date_depart=${date}`;
                 allTrips = await apiCall(`trips.php?${query}`);
 
                 // Auto-seeding pour Vercel : si tous les chauffeurs sont "EcoDriver", on injecte les faux profils depuis le front
@@ -237,7 +237,7 @@
                                 <!-- Détails Trajets -->
                                 <div class="mb-2">
                                     <h5 class="fw-bold mb-1" style="color: var(--eco-primary); font-size: 1.1rem;">
-                                        ${t.ville_depart} <span class="text-muted mx-1">&rarr;</span> ${t.ville_destination}
+                                        ${t.ville_depart} <span class="text-muted mx-1">&rarr;</span> ${t.ville_arrivee}
                                     </h5>
                                     <div class="text-muted small fw-medium d-flex flex-wrap align-items-center">
                                         <span>${new Date(t.date_depart).toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' })}. &bull; ${t.heure_depart} - ${new Date(new Date('1970/01/01 ' + t.heure_depart).getTime() + t.duree_max * 60000).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>

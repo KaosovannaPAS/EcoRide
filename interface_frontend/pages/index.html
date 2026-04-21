@@ -42,7 +42,7 @@
                             <div class="divider h-100"></div>
                         </div>
                         <div class="col-md-3">
-                            <input type="text" class="form-control" name="ville_destination" placeholder="Arrivée"
+                            <input type="text" class="form-control" name="ville_arrivee" placeholder="Arrivée"
                                 required>
                         </div>
                         <div class="col-md-auto d-none d-md-block">
@@ -336,7 +336,7 @@
                 }
 
                 // Filter for "Bon Plans": Strictly Price <= 20
-                const featured = trajets.filter(t => t.prix <= 20).slice(0, 10);
+                const featured = trips.trajets.filter(t => t.prix <= 20).slice(0, 10);
 
                 if (featured.length === 0) {
                     container.innerHTML = '<div class="col-12 text-center text-muted py-5"><p>Aucun bon plan avec réduction de crédits trouvé. Consultez tous les trajets !</p></div>';
@@ -384,7 +384,7 @@
                                 <!-- Détails Trajets -->
                                 <div class="mb-2">
                                     <h5 class="fw-bold mb-1 text-truncate" style="color: var(--eco-primary); font-size: 1.1rem;">
-                                        ${t.ville_depart} <span class="text-muted mx-1">&rarr;</span> ${t.ville_destination}
+                                        ${t.ville_depart} <span class="text-muted mx-1">&rarr;</span> ${t.ville_arrivee}
                                     </h5>
                                     <div class="text-muted small fw-medium d-flex flex-wrap align-items-center">
                                         <span>${new Date(t.date_depart).toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' })}. &bull; ${t.heure_depart.substring(0, 5)}</span>

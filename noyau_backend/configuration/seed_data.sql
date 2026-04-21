@@ -12,7 +12,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 -- 2. Insertion des Utilisateurs Réalistes (Hash de 'password' pour tous)
 -- Mot de passe: password
-INSERT INTO utilisateurs (id, pseudo, email, mot_de_passe, role, credits, photo, biographie, pref_fumeur, pref_animaux, pref_musique) VALUES
+INSERT INTO utilisateurs (id, pseudo, email, mot_de_passe_hash, role, credits, photo, biographie, pref_fumeur, pref_animaux, pref_musique) VALUES
 (1, 'Administrateur', 'admin@ecoride.fr', '$2y$10$Kjgj.pjzhcODkLdSkLCg6utXscW7Y9Icohq6ew/OB2yHfL4tkxkZW', 'admin', 150, 'user1.jpg', 'Administrateur de la plateforme EcoRide.', 0, 1, 1),
 (2, 'Marc D.', 'marc.d@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'chauffeur', 85, 'user2.jpg', 'Trajets réguliers entre Paris et Lyon.', 0, 0, 1),
 (3, 'Julie D.', 'julie.d@outlook.fr', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'chauffeur', 120, 'user3.jpg', 'Voyagez confortablement et en musique ! 🎶', 0, 1, 1),
@@ -26,7 +26,7 @@ INSERT INTO vehicules (id, utilisateur_id, immatriculation, modele, couleur, est
 (3, 3, 'EV-789-EF', 'Peugeot e-208', 'Gris', 1);
 
 -- 4. Insertion des Trajets Réalistes (Dates de 2026 pour être dans le futur)
-INSERT INTO trajets (id, conducteur_id, vehicule_id, ville_depart, ville_destination, date_depart, heure_depart, prix, duree_max, places_max, statut) VALUES
+INSERT INTO trajets (id, conducteur_id, vehicule_id, ville_depart, ville_arrivee, date_depart, heure_depart, prix, duree_max, places_max, statut) VALUES
 (1, 1, 1, 'Paris', 'Lyon', '2026-04-10', '08:00:00', 25, 240, 3, 'planifie'),
 (2, 2, 2, 'Marseille', 'Nice', '2026-04-11', '14:30:00', 15, 120, 2, 'planifie'),
 (3, 3, 3, 'Bordeaux', 'Toulouse', '2026-04-12', '10:00:00', 18, 150, 4, 'planifie'),

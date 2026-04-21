@@ -78,7 +78,7 @@ class Reservation
     {
         $query = "
             SELECT r.id as reservation_id, r.statut as reservation_statut, 
-                   t.id as trajet_id, t.ville_depart, t.ville_destination, t.date_depart, t.heure_depart, t.prix, t.statut as trajet_statut,
+                   t.id as trajet_id, t.ville_depart, t.ville_arrivee, t.date_depart, t.heure_depart, t.prix, t.statut as trajet_statut,
                    u.pseudo as conducteur_pseudo
             FROM " . $this->table_name . " r
             JOIN trajets t ON r.trajet_id = t.id

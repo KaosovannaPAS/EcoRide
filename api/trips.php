@@ -12,9 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/../noyau_backend/configuration/db.php';
-require_once __DIR__ . '/../noyau_backend/controllers/TripController.php';
+require_once __DIR__ . '/../noyau_backend/controllers/TrajetController.php';
 
-$controller = new TripController($pdo);
+$controller = new TrajetController($pdo);
 $action = $_GET['action'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -33,7 +33,7 @@ switch ($method) {
         if ($action === 'search') {
             $filters = [
                 'ville_depart' => $_GET['ville_depart'] ?? null,
-                'ville_destination' => $_GET['ville_destination'] ?? null,
+                'ville_arrivee' => $_GET['ville_arrivee'] ?? null,
                 'date_depart' => $_GET['date_depart'] ?? null,
                 'prix_max' => $_GET['prix_max'] ?? null,
                 'duree_max' => $_GET['duree_max'] ?? null,

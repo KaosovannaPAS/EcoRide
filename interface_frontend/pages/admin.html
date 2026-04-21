@@ -930,7 +930,7 @@ async function loadTrips() {
     tbody.innerHTML = trips.map(t => {
         const eco = t.est_electrique==1?'🍃 ':'';
         return `<tr>
-            <td>${eco}<strong>${esc(t.ville_depart)}</strong> → <strong>${esc(t.ville_destination)}</strong></td>
+            <td>${eco}<strong>${esc(t.ville_depart)}</strong> → <strong>${esc(t.ville_arrivee)}</strong></td>
             <td style="color:var(--muted);font-size:12px;">${esc(t.conducteur_pseudo||'#'+t.conducteur_id)}</td>
             <td style="font-size:12px;">${fDate(t.date_depart)} ${(t.heure_depart||'').substring(0,5)}</td>
             <td><strong style="color:var(--orange);">${t.prix} cr</strong></td>
@@ -985,7 +985,7 @@ async function loadIncidents() {
     if (filter) inc = inc.filter(i => i.statut === filter);
     if (!inc.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">✅</div><div class="empty-msg">Aucun incident trouvé.</div></div></td></tr>'; return; }
     tbody.innerHTML = inc.map(i => `<tr>
-        <td><strong>${esc(i.ville_depart)} → ${esc(i.ville_destination)}</strong></td>
+        <td><strong>${esc(i.ville_depart)} → ${esc(i.ville_arrivee)}</strong></td>
         <td style="font-size:12px;">${esc(i.signaleur||'#'+i.utilisateur_id)}</td>
         <td style="font-size:12px;max-width:260px;">${esc(i.description||'')}</td>
         <td><span class="badge badge-${i.statut||'ouvert'}">${i.statut==='resolu'?'Résolu':'Ouvert'}</span></td>

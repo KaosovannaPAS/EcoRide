@@ -45,7 +45,7 @@ class UtilisateurController
 
         $this->utilisateur->pseudo = $data->pseudo;
         $this->utilisateur->email = $data->email;
-        $this->utilisateur->mot_de_passe = $data->mot_de_passe;
+        $this->utilisateur->mot_de_passe_hash = $data->mot_de_passe;
         if (isset($data->role))
             $this->utilisateur->role = $data->role;
 

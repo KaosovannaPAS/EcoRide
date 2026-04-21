@@ -334,7 +334,7 @@
                     conducteur_id: user.id,
                     vehicule_id: document.getElementById('t-vehicule').value,
                     ville_depart: document.getElementById('t-depart').value,
-                    ville_destination: document.getElementById('t-arrivee').value,
+                    ville_arrivee: document.getElementById('t-arrivee').value,
                     date_depart: document.getElementById('t-date').value,
                     heure_depart: document.getElementById('t-heure').value,
                     prix: document.getElementById('t-prix').value,
@@ -439,7 +439,7 @@
                     <div class="col-md-12">
                         <div class="p-4 border rounded-4 d-flex justify-content-between align-items-center bg-light">
                             <div>
-                                <strong class="fs-5">${t.ville_depart} ➔ ${t.ville_destination}</strong><br>
+                                <strong class="fs-5">${t.ville_depart} ➔ ${t.ville_arrivee}</strong><br>
                                 <small class="text-muted">${t.date_depart} à ${t.heure_depart} - ${t.prix} Crédits</small><br>
                                 <span class="badge bg-primary rounded-pill mt-2">Statut: ${t.statut}</span>
                             </div>
@@ -495,7 +495,7 @@
                     <div class="col-md-12">
                         <div class="p-4 border rounded-4 bg-light">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <strong class="fs-5">${r.ville_depart} ➔ ${r.ville_destination}</strong>
+                                <strong class="fs-5">${r.ville_depart} ➔ ${r.ville_arrivee}</strong>
                                 <span class="badge ${statusColor} rounded-pill">${statusText}</span>
                             </div>
                             <small class="text-muted d-block mb-3">Le ${r.date_depart} à ${r.heure_depart} - ${r.prix} Crédits</small>

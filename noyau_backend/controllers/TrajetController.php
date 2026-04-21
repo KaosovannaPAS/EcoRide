@@ -16,14 +16,14 @@ class TrajetController
     public function create($data)
     {
         if (empty($data->conducteur_id) || empty($data->vehicule_id) || empty($data->ville_depart) ||
-        empty($data->ville_destination) || empty($data->date_depart) || empty($data->prix)) {
+        empty($data->ville_arrivee) || empty($data->date_depart) || empty($data->prix)) {
             return ["status" => 400, "message" => "Données incomplètes."];
         }
 
         $this->trajet->conducteur_id = $data->conducteur_id;
         $this->trajet->vehicule_id = $data->vehicule_id;
         $this->trajet->ville_depart = $data->ville_depart;
-        $this->trajet->ville_destination = $data->ville_destination;
+        $this->trajet->ville_arrivee = $data->ville_arrivee;
         $this->trajet->date_depart = $data->date_depart;
         $this->trajet->heure_depart = $data->heure_depart;
         $this->trajet->prix = $data->prix;
