@@ -1,0 +1,7 @@
+{
+    "name": "kaosovanna/eco-ride",
+    "description": "EcoRide PHP Backend",
+    "require": {
+        "mongodb/mongodb": "^1.15"
+    }
+}

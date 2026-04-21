@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Conducteur — EcoRide</title>
+    <meta name="description" content="Consultez le profil, les avis et les notes de ce conducteur EcoRide.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="../ressources/css/style.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f4fcf7; }
+
+        .profile-hero {
+            background: linear-gradient(135deg, #054752 0%, #00a651 100%);
+            padding: 60px 0 100px;
+            position: relative;
+            overflow: hidden;
+        }
+        .profile-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%);
+            animation: rotate 20s linear infinite;
+        }
+        @keyframes rotate { to { transform: rotate(360deg); } }
+
+        .profile-card {
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            margin-top: -60px;
+            position: relative;
+            z-index: 10;
+            overflow: hidden;
+        }
+        .avatar-wrap {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid #fff;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            overflow: hidden;
+            margin: -60px auto 20px;
+            position: relative;
+            z-index: 11;
+            flex-shrink: 0;
+        }
+        .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-initials {
+            width: 120px; height: 120px; border-radius: 50%;
+            background: linear-gradient(135deg, #00cc66, #054752);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 48px; font-weight: 800; color: #fff;
+            border: 5px solid #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            margin: -60px auto 20px;
+        }
+
+        .stat-pill {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 50px;
+            padding: 10px 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .stat-pill .stat-value { font-size: 22px; font-weight: 800; color: var(--eco-primary, #054752); }
+        .stat-pill .stat-label { font-size: 12px; color: #6b7280; font-weight: 500; }
+
+        .pref-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #f0fdf4; border: 1px solid #bbf7d0;
+            border-radius: 50px; padding: 6px 14px;
+            font-size: 13px; font-weight: 600; color: #166534;
+        }
+        .pref-badge.off {
+            background: #fafafa; border-color: #e5e7eb;
+            color: #9ca3af; text-decoration: line-through;
+        }
+
+        .stars { color: #f59e0b; font-size: 18px; letter-spacing: 2px; }
+
+        .review-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.2s ease;
+            background: #fafffe;
+        }
+        .review-card:hover {
+            border-color: #bbf7d0;
+            box-shadow: 0 4px 12px rgba(0,204,102,0.1);
+            transform: translateY(-2px);
+        }
+        .reviewer-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: linear-gradient(135deg, #00cc66, #054752);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: #fff; font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .rating-bar { height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }
+        .rating-fill { height: 100%; background: linear-gradient(90deg, #f59e0b, #f97316); border-radius: 4px; transition: width 1s ease; }
+
+        .section-title {
+            font-size: 20px; font-weight: 800; color: #054752;
+            margin-bottom: 20px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .section-title::after {
+            content: ''; flex: 1; height: 2px; background: #e5e7eb;
+        }
+    </style>
+</head>
+<body>
+
+<div id="header-container"></div>
+
+<!-- Hero background -->
+<div class="profile-hero">
+    <div class="container text-center text-white position-relative" style="z-index:2;">
+        <div class="mb-2" id="hero-badge">
+            <span class="badge bg-white text-success fw-bold px-3 py-2 rounded-pill">🌿 Conducteur EcoRide</span>
+        </div>
+        <h1 class="fw-bold" id="hero-name" style="font-size:2rem;">Chargement…</h1>
+        <p class="opacity-75" id="hero-member-since"></p>
+    </div>
+</div>
+
+<div class="container" style="max-width:860px;">
+
+    <!-- Profile Card -->
+    <div class="profile-card mb-4">
+        <div class="text-center p-4 pt-0" id="avatar-container">
+            <div class="avatar-initials" id="avatar-placeholder">?</div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="d-flex flex-wrap justify-content-center gap-3 px-4 pb-4" id="stats-row">
+            <div class="stat-pill">
+                <span class="stat-value" id="stat-rating">—</span>
+                <div>
+                    <div class="stars" id="stat-stars">☆☆☆☆☆</div>
+                    <div class="stat-label">Note moyenne</div>
+                </div>
+            </div>
+            <div class="stat-pill">
+                <span class="stat-value" id="stat-reviews">—</span>
+                <div class="stat-label">Avis reçus</div>
+            </div>
+            <div class="stat-pill">
+                <span class="stat-value" id="stat-trips">—</span>
+                <div class="stat-label">Trajets effectués</div>
+            </div>
+        </div>
+
+        <hr class="mx-4">
+
+        <!-- Bio -->
+        <div class="px-4 pb-4" id="bio-section">
+            <div class="section-title">À propos</div>
+            <p id="bio-text" class="text-muted" style="font-size:15px; line-height:1.7;"></p>
+        </div>
+
+        <!-- Preferences -->
+        <div class="px-4 pb-4" id="prefs-section">
+            <div class="section-title">Préférences</div>
+            <div class="d-flex flex-wrap gap-2" id="prefs-list"></div>
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="mb-5">
+        <div class="section-title" style="font-size:20px; font-weight:800; color:#054752; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+            ⭐ Avis des passagers
+            <span class="badge rounded-pill" style="background:#f0fdf4; color:#166534; font-size:13px; font-weight:700;" id="review-count-badge">0</span>
+            <span style="flex:1; height:2px; background:#e5e7eb; display:block;"></span>
+        </div>
+
+        <!-- Rating distribution -->
+        <div class="profile-card p-4 mb-4" id="rating-distribution" style="display:none;">
+            <div class="row align-items-center">
+                <div class="col-3 text-center">
+                    <div style="font-size:56px; font-weight:900; color:#054752; line-height:1;" id="big-avg">—</div>
+                    <div class="stars" id="big-stars">☆☆☆☆☆</div>
+                    <div class="text-muted small mt-1" id="big-count"></div>
+                </div>
+                <div class="col-9" id="rating-bars"></div>
+            </div>
+        </div>
+
+        <div id="reviews-container">
+            <div class="text-center py-5">
+                <div class="spinner-border text-success"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="footer-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../ressources/js/api.js"></script>
+<script>
+    // Load header/footer
+    fetch('../composants/header.html').then(r => r.text()).then(d => {
+        document.getElementById('header-container').innerHTML = d;
+        document.getElementById('header-container').querySelectorAll('script').forEach(s => {
+            const ns = document.createElement('script');
+            ns.text = s.innerHTML;
+            document.body.appendChild(ns);
+        });
+    });
+    fetch('../composants/footer.html').then(r => r.text()).then(d => document.getElementById('footer-container').innerHTML = d);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('id');
+
+    if (!userId) {
+        window.location.href = 'index.html';
+    }
+
+    function renderStars(rating, total = 5) {
+        let html = '';
+        for (let i = 1; i <= total; i++) {
+            html += i <= Math.round(rating) ? '★' : '☆';
+        }
+        return html;
+    }
+
+    async function loadProfile() {
+        try {
+            const res = await fetch(`../../api/profil.php?user_id=${userId}`);
+            const data = await res.json();
+
+            if (data.status !== 200) {
+                document.getElementById('hero-name').textContent = 'Utilisateur introuvable';
+                return;
+            }
+
+            const u = data.utilisateur;
+
+            // Hero
+            document.title = `${u.pseudo} — EcoRide`;
+            document.getElementById('hero-name').textContent = u.pseudo;
+            document.getElementById('hero-member-since').textContent =
+                'Membre depuis ' + new Date(u.date_creation).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+
+            // Role badge
+            const roleLabels = { admin: '🛡️ Administrateur', employe: '🔧 Employé', chauffeur: '🚗 Conducteur', passager: '🌿 Membre' };
+            document.getElementById('hero-badge').innerHTML = `<span class="badge bg-white text-success fw-bold px-3 py-2 rounded-pill">${roleLabels[u.role] || '🌿 Membre'}</span>`;
+
+            // Avatar
+            const avatarContainer = document.getElementById('avatar-container');
+            if (u.photo && u.photo !== 'generic.png' && u.photo !== '') {
+                avatarContainer.innerHTML = `<div class="avatar-wrap"><img src="../ressources/images/${u.photo}" alt="${u.pseudo}"></div>`;
+            } else {
+                document.getElementById('avatar-placeholder').textContent = u.pseudo.charAt(0).toUpperCase();
+            }
+
+            // Stats
+            document.getElementById('stat-rating').textContent = data.note_moyenne || '—';
+            document.getElementById('stat-stars').innerHTML = data.note_moyenne ? renderStars(data.note_moyenne) : '☆☆☆☆☆';
+            document.getElementById('stat-stars').style.color = '#f59e0b';
+            document.getElementById('stat-reviews').textContent = data.nb_avis;
+            document.getElementById('stat-trips').textContent = data.total_trajets;
+
+            // Bio
+            const bioSection = document.getElementById('bio-section');
+            if (u.bio) {
+                document.getElementById('bio-text').textContent = u.bio;
+            } else {
+                bioSection.style.display = 'none';
+            }
+
+            // Preferences
+            const prefs = [
+                { key: 'pref_fumeur', on: '🚬 Fumeur accepté', off: '🚭 Non fumeur' },
+                { key: 'pref_animaux', on: '🐾 Animaux acceptés', off: '🚫 Sans animaux' },
+                { key: 'pref_musique', on: '🎵 Musique', off: '🔇 Silence' }
+            ];
+            const prefsList = document.getElementById('prefs-list');
+            prefsList.innerHTML = prefs.map(p =>
+                `<span class="pref-badge ${u[p.key] ? '' : 'off'}">${u[p.key] ? p.on : p.off}</span>`
+            ).join('');
+
+            // Reviews
+            renderReviews(data.avis, data.note_moyenne, data.nb_avis);
+
+        } catch (e) {
+            console.error(e);
+            document.getElementById('hero-name').textContent = 'Erreur de chargement';
+        }
+    }
+
+    function renderReviews(reviews, avg, count) {
+        document.getElementById('review-count-badge').textContent = count;
+        const container = document.getElementById('reviews-container');
+
+        if (!reviews || reviews.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <div style="font-size:48px;">💬</div>
+                    <p class="text-muted mt-3 fw-semibold">Aucun avis pour l'instant</p>
+                    <p class="text-muted small">Soyez le premier à voyager avec ce conducteur !</p>
+                </div>`;
+            return;
+        }
+
+        // Rating distribution
+        const distEl = document.getElementById('rating-distribution');
+        distEl.style.display = 'block';
+        document.getElementById('big-avg').textContent = avg;
+        document.getElementById('big-stars').innerHTML = renderStars(avg);
+        document.getElementById('big-stars').style.color = '#f59e0b';
+        document.getElementById('big-count').textContent = `${count} avis`;
+
+        const counts = [5,4,3,2,1].map(n => ({ star: n, cnt: reviews.filter(r => r.note === n).length }));
+        document.getElementById('rating-bars').innerHTML = counts.map(({ star, cnt }) => `
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="text-warning fw-bold small" style="width:24px;">${star}★</span>
+                <div class="rating-bar flex-grow-1">
+                    <div class="rating-fill" style="width:${count ? (cnt/count*100) : 0}%"></div>
+                </div>
+                <span class="text-muted small" style="width:20px;">${cnt}</span>
+            </div>`).join('');
+
+        // Review cards
+        container.innerHTML = reviews.map(r => {
+            const initials = (r.auteur_pseudo || '?').charAt(0).toUpperCase();
+            const date = new Date(r.date_creation).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+            return `
+                <div class="review-card mb-3">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="reviewer-avatar">${initials}</div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold" style="font-size:14px;">${r.auteur_pseudo || 'Anonyme'}</span>
+                                <span class="text-muted small">${date}</span>
+                            </div>
+                            <div class="stars mb-2" style="font-size:15px;">${renderStars(r.note)}</div>
+                            ${r.commentaire ? `<p class="mb-0 text-muted" style="font-size:14px; line-height:1.6;">"${r.commentaire}"</p>` : ''}
+                        </div>
+                    </div>
+                </div>`;
+        }).join('');
+    }
+
+    loadProfile();
+</script>
+</body>
+</html>

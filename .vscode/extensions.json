@@ -1,0 +1,13 @@
+{
+    "recommendations": [
+        "bmewburn.vscode-php-intelephense",
+        "xdebug.php-debug",
+        "ms-vscode.live-server",
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker",
+        "formulahendry.mysql",
+        "ritwickdey.LiveServer",
+        "oderwat.indent-rainbow",
+        "dbaeumer.vscode-eslint"
+    ]
+}
